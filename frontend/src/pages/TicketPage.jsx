@@ -1,128 +1,152 @@
-import React from 'react';
 import { 
     Ticket, 
     Clock, 
-    Tool, 
     CheckCircle2, 
     AlertCircle, 
-    Search, 
+    Search,
     Filter,
     Plus,
     Wrench,
-    ArrowRight
+    ArrowRight,
+    ChevronRight,
+    MoreVertical
 } from 'lucide-react';
-
-/**
- * TicketPage Component
- * 
- * Description: Operational interface for technicians to manage maintenance 
- * and support requests. It features a streamlined queue system, 
- * detailed issue tracking, and real-time status updates for campus facilities.
- * Designed with a high-contrast emerald theme for clarity and action focus.
- * 
- * Roles: Accessible to TECHNICIAN only.
- */
 
 const TicketPage = () => {
     return (
-        <div className="p-8 max-w-7xl mx-auto min-h-screen">
-            {/* Technician Header */}
-            <header className="mb-12 animate-in fade-in slide-in-from-left duration-700">
-                <div className="flex items-center justify-between mb-2">
+        <div className="p-6 md:p-10 lg:p-16 max-w-[1600px] mx-auto min-h-screen">
+            {/* Header Area */}
+            <header className="mb-12 flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in fade-in slide-in-from-left duration-700">
+                <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                        <div className="bg-emerald-600 p-3 rounded-2xl shadow-xl shadow-emerald-200">
-                            <Wrench className="text-white h-8 w-8" />
+                        <div className="bg-blue-600 p-4 rounded-3xl shadow-2xl shadow-blue-200">
+                            <Ticket className="text-white h-8 w-8" />
                         </div>
-                        <h1 className="text-5xl font-black text-gray-900 tracking-tight">Maintenance Ops</h1>
+                        <div>
+                             <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.4em] block mb-1">Queue Management</span>
+                             <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Active Workloads</h1>
+                        </div>
                     </div>
-                    <button className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:shadow-emerald-200 hover:-translate-y-1 transition-all flex items-center gap-2">
-                        <Plus className="w-5 h-5" /> New Ticket
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="relative group flex-grow lg:flex-none lg:w-80">
+                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-blue-600 transition-colors" />
+                         <input 
+                            type="text" 
+                            placeholder="Filter tickets..." 
+                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm"
+                         />
+                    </div>
+                    <button className="p-3.5 bg-white border border-slate-100 rounded-2xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all shadow-sm">
+                        <Filter size={20} />
+                    </button>
+                    <button className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-slate-200 hover:bg-black transition-all">
+                        <Plus size={18} /> New Request
                     </button>
                 </div>
-                <p className="text-gray-500 text-xl font-medium max-w-2xl px-1">
-                    Manage active tickets, schedule equipment checks, and resolve facility issues.
-                </p>
             </header>
 
-            {/* Filter & Search Bar */}
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-10 flex flex-wrap gap-4 items-center">
-                <div className="flex-grow flex items-center bg-gray-50 px-6 py-4 rounded-2xl border border-gray-100 group transition-all hover:bg-white hover:border-emerald-500">
-                    <Search className="text-gray-400 mr-4 group-hover:text-emerald-500 transition-colors" />
-                    <input 
-                        type="text" 
-                        placeholder="Search ticket ID, building, or issue type..." 
-                        className="bg-transparent border-none outline-none w-full text-gray-700 font-bold placeholder:text-gray-400"
-                    />
-                </div>
-                <button className="bg-gray-50 px-8 py-4 rounded-2xl font-black text-gray-700 hover:bg-white hover:shadow-md transition-all border border-gray-100 flex items-center gap-2">
-                    <Filter className="w-5 h-5" /> Filter Queue
-                </button>
+            {/* Status Summaries */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <StatusSummary icon={<Clock size={16} />} label="In Queue" count="12" color="text-amber-600" bg="bg-amber-50" />
+                <StatusSummary icon={<Wrench size={16} />} label="In Progress" count="08" color="text-blue-600" bg="bg-blue-50" />
+                <StatusSummary icon={<CheckCircle2 size={16} />} label="Resolved" count="142" color="text-emerald-600" bg="bg-emerald-50" />
+                <StatusSummary icon={<AlertCircle size={16} />} label="Flagged" count="03" color="text-rose-600" bg="bg-rose-50" />
             </div>
 
-            {/* Ticket Queue */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Tickets Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 <TicketCard 
-                    id="#T-8942"
-                    title="HVAC Leakage - Building G"
+                    id="TCK-8842"
+                    title="HVAC Failure - Building C"
+                    location="North Wing, 3rd Floor"
                     priority="HIGH"
-                    status="IN PROGRESS"
-                    time="Created 25m ago"
-                    desc="Water damage reported on 4th floor server room ceiling. Urgent inspection required."
+                    status="IN_PROGRESS"
+                    time="42m ago"
                 />
                 <TicketCard 
-                    id="#T-8938"
-                    title="Smart Lock Malfunction"
+                    id="TCK-8839"
+                    title="Elevator Calibration"
+                    location="Science Block A"
                     priority="MEDIUM"
-                    status="OPEN"
-                    time="Created 42m ago"
-                    desc="Library entrance gate not responding to NFC credentials. Manual override active."
+                    status="PENDING"
+                    time="1h ago"
                 />
                 <TicketCard 
-                    id="#T-8935"
-                    title="Power Surge - Lab 102"
-                    priority="CRITICAL"
-                    status="ON HOLD"
-                    time="Created 1.5h ago"
-                    desc="Stabilizer failure caused multiple workstation shutdowns. Spare parts ordered."
+                    id="TCK-8835"
+                    title="Emergency Lighting Check"
+                    location="Main Auditorium"
+                    priority="LOW"
+                    status="COMPLETED"
+                    time="3h ago"
                 />
-                <div className="bg-gray-50 border-4 border-dashed border-gray-200 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center group cursor-pointer hover:border-emerald-200 hover:bg-emerald-50 transition-all duration-500">
-                    <div className="bg-white p-6 rounded-full shadow-lg mb-6 group-hover:scale-110 transition-transform">
-                        <CheckCircle2 className="w-12 h-12 text-gray-300 group-hover:text-emerald-500 transition-colors" />
-                    </div>
-                    <h3 className="text-2xl font-black text-gray-400 group-hover:text-emerald-700 transition-colors">Clear Pending Tasks</h3>
-                    <p className="text-gray-400 group-hover:text-emerald-600 transition-colors">Everything is running smoothly right now.</p>
-                </div>
+                <TicketCard 
+                    id="TCK-8830"
+                    title="Smart Meter Offline"
+                    location="Staff Residence G4"
+                    priority="HIGH"
+                    status="FLAGGED"
+                    time="5h ago"
+                />
             </div>
         </div>
     );
 };
 
-const TicketCard = ({ id, title, priority, status, time, desc }) => {
-    const priorityColor = {
-        HIGH: "bg-rose-50 text-rose-600",
-        MEDIUM: "bg-amber-50 text-amber-600",
-        CRITICAL: "bg-gray-900 text-white"
+const StatusSummary = ({ icon, label, count, color, bg }) => (
+    <div className={`${bg} p-6 rounded-[2rem] border border-white/50 flex flex-col gap-2 group transition-all hover:shadow-lg`}>
+        <div className={`p-2.5 rounded-xl bg-white w-max ${color} shadow-sm group-hover:rotate-6 transition-transform`}>{icon}</div>
+        <div className="flex items-end justify-between mt-2">
+            <span className={`text-[10px] font-black uppercase tracking-widest ${color} opacity-60`}>{label}</span>
+            <span className={`text-2xl font-black ${color}`}>{count}</span>
+        </div>
+    </div>
+);
+
+const TicketCard = ({ id, title, location, priority, status, time }) => {
+    const priorityColors = {
+        HIGH: "text-rose-600 bg-rose-50 border-rose-100",
+        MEDIUM: "text-amber-600 bg-amber-50 border-amber-100",
+        CRITICAL: "text-slate-900 bg-slate-100 border-slate-200",
+        LOW: "text-emerald-600 bg-emerald-50 border-emerald-100"
     };
 
     return (
-        <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 flex flex-col group hover:shadow-2xl hover:shadow-emerald-100 transition-all duration-500 hover:-translate-y-1">
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 flex flex-col group relative overflow-hidden">
             <div className="flex justify-between items-start mb-6">
-                <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">{id}</span>
-                <span className={`text-[10px] font-black px-3 py-1 rounded-full ${priorityColor[priority]}`}>{priority}</span>
-            </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight leading-tight group-hover:text-emerald-700 transition-colors">{title}</h3>
-            <p className="text-gray-500 font-medium mb-8 leading-relaxed line-clamp-2">{desc}</p>
-            <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
-                <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-xs font-bold text-gray-400 uppercase">{time}</span>
+                <span className="text-[10px] font-black text-slate-400 tracking-[0.2em]">{id}</span>
+                <div className={`px-2.5 py-1 rounded-lg text-[9px] font-black border uppercase tracking-wider ${priorityColors[priority] || "bg-slate-50 text-slate-400"}`}>
+                    {priority}
                 </div>
-                <button className="flex items-center gap-2 text-indigo-600 font-black hover:gap-4 transition-all">
-                    Assign/Start <ArrowRight className="w-5 h-5" />
+            </div>
+
+            <div className="mb-8">
+                <h3 className="text-xl font-black text-slate-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors">{title}</h3>
+                <p className="text-sm font-medium text-slate-500 flex items-center gap-2 opacity-70">
+                    <Building2 size={14} /> {location}
+                </p>
+            </div>
+
+            <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-black text-slate-400">
+                    <Clock size={14} /> {time}
+                </div>
+                <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                    <MoreVertical size={20} />
                 </button>
             </div>
+
+            {/* Status Indicator */}
+            <div className={`absolute top-0 right-0 w-1.5 h-full ${
+                status === 'COMPLETED' ? 'bg-emerald-500' : 
+                status === 'IN_PROGRESS' ? 'bg-blue-500' :
+                status === 'FLAGGED' ? 'bg-rose-500' : 'bg-slate-200'
+            }`}></div>
         </div>
     );
 };
+
+const Building2 = ({ size, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22V12h6v10"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M12 18h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M16 18h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path><path d="M8 18h.01"></path></svg>;
 
 export default TicketPage;

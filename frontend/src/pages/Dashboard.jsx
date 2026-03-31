@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
     LayoutDashboard, 
     Users, 
@@ -6,137 +5,157 @@ import {
     BarChart, 
     TrendingUp,
     Activity,
-    Zap
+    Zap,
+    ChevronRight,
+    Search
 } from 'lucide-react';
-
-/**
- * Dashboard Component
- * 
- * Description: The central hub for all users of the Smart Campus Operations Hub.
- * It provides a high-level overview of system metrics, active users, pending tasks,
- * and overall system health. Designed with a clean, premium aesthetic using 
- * vibrant accents and modern typography.
- * 
- * Roles: Accessible to USER, ADMIN, TECHNICIAN, MANAGER.
- */
 
 const Dashboard = () => {
     return (
-        <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent">
-            {/* Header Section */}
-            <header className="mb-12 animate-in fade-in slide-in-from-left duration-700">
-                <div className="flex items-center gap-4 mb-2">
-                    <div className="h-10 w-2 bg-blue-600 rounded-full"></div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tight">Campus Dashboard</h1>
+        <div className="p-6 md:p-10 lg:p-16 max-w-[1600px] mx-auto min-h-screen bg-slate-50/30">
+            {/* Contextual Header */}
+            <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 animate-in fade-in slide-in-from-left duration-700">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-1.5 bg-blue-600 rounded-full"></div>
+                        <span className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Operational OS</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Campus Overview</h1>
                 </div>
-                <p className="text-gray-500 text-xl font-medium max-w-2xl">
-                    Welcome back! Here's what's happening across the smart campus facilities right now.
-                </p>
+
+                <div className="flex items-center gap-4">
+                    <div className="relative group lg:w-80 w-full">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-blue-600 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="Search systems..." 
+                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm"
+                        />
+                    </div>
+                </div>
             </header>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Premium KPI Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12">
                 <StatCard 
-                    icon={<Users className="w-8 h-8 text-blue-600" />} 
-                    title="Live Connectivity" 
+                    icon={<Users className="w-6 h-6 text-blue-600" />} 
+                    title="Active Sessions" 
                     value="1,284" 
-                    trend="+12% from yesterday"
-                    color="bg-blue-50"
+                    trend="+12% YoY"
+                    positive={true}
                 />
                 <StatCard 
-                    icon={<Ticket className="w-8 h-8 text-emerald-600" />} 
-                    title="Active Tickets" 
+                    icon={<Ticket className="w-6 h-6 text-indigo-600" />} 
+                    title="Pending Ops" 
                     value="42" 
-                    trend="5 items urgent"
-                    color="bg-emerald-50"
+                    trend="5 Critical"
+                    positive={false}
                 />
                 <StatCard 
-                    icon={<Activity className="w-8 h-8 text-rose-600" />} 
-                    title="System Load" 
+                    icon={<Activity className="w-6 h-6 text-rose-600" />} 
+                    title="Core Load" 
                     value="24%" 
-                    trend="Healthy status"
-                    color="bg-rose-50"
+                    trend="Stable"
+                    positive={true}
                 />
                 <StatCard 
-                    icon={<Zap className="w-8 h-8 text-amber-600" />} 
-                    title="Energy Flow" 
+                    icon={<Zap className="w-6 h-6 text-amber-600" />} 
+                    title="Power Flow" 
                     value="452 kW" 
-                    trend="Normal consumption"
-                    color="bg-amber-50"
+                    trend="Normal"
+                    positive={true}
                 />
             </div>
 
-            {/* Activity & Updates Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 p-10 transform transition hover:scale-[1.01] duration-500">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                           <LayoutDashboard className="text-blue-600" /> Operational Insights
-                        </h2>
-                        <button className="text-blue-600 font-bold hover:underline">View All</button>
+            {/* Intelligence & Activity Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Insights Panel */}
+                <div className="lg:col-span-8 bg-white rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-100 p-8 md:p-12">
+                    <div className="flex items-center justify-between mb-10">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl shadow-slate-200">
+                                <LayoutDashboard className="text-white w-6 h-6" />
+                            </div>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">System Intelligence</h2>
+                        </div>
+                        <button className="text-xs font-black text-blue-600 flex items-center gap-2 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-all">
+                           Live Activity <ChevronRight size={14} />
+                        </button>
                     </div>
-                    <div className="space-y-6">
+
+                    <div className="space-y-4">
                         <ActivityItem 
-                            label="Network Upgrade" 
-                            desc="Core switch in Building A successfully updated." 
-                            time="2h ago" 
-                            status="success" 
+                            label="Core Network" 
+                            desc="Building A distribution switch successfully synchronized with secondary node." 
+                            time="2h" 
+                            type="SUCCESS" 
                         />
                         <ActivityItem 
-                            label="Security Alert" 
-                            desc="Unusual login attempt blocked from 192.168.1.45." 
-                            time="4h ago" 
-                            status="warning" 
+                            label="Access Violation" 
+                            desc="Multiple failed login attempts detected from unauthorized subnet 192.168.x.x." 
+                            time="4h" 
+                            type="WARNING" 
                         />
                         <ActivityItem 
-                            label="Fleet Management" 
-                            desc="Autonomous shuttles scheduled for battery maintenance." 
-                            time="6h ago" 
-                            status="info" 
+                            label="Logistics Hub" 
+                            desc="Autonomous shuttle battery lifecycle maintenance scheduled for 04:00 AM." 
+                            time="6h" 
+                            type="INFO" 
                         />
                     </div>
                 </div>
 
-                <div className="bg-indigo-900 rounded-3xl shadow-2xl p-10 text-white flex flex-col justify-between overflow-hidden relative group">
-                    <div className="relative z-10">
-                        <TrendingUp className="w-12 h-12 mb-6 text-indigo-300 group-hover:scale-110 transition-transform" />
-                        <h3 className="text-3xl font-black mb-4">Optimization Suggestions</h3>
-                        <p className="text-indigo-200 font-medium mb-8">Based on current patterns, shifting chiller loads by 1 hour could save 15% in costs.</p>
-                        <button className="bg-white text-indigo-900 px-8 py-4 rounded-2xl font-black shadow-lg hover:bg-slate-50 transition-all">Optimize Now</button>
+                {/* Efficiency Widget */}
+                <div className="lg:col-span-4 bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 text-white flex flex-col justify-between overflow-hidden relative group">
+                    <div className="relative z-10 space-y-6">
+                        <div className="p-4 bg-white/10 rounded-2xl w-max group-hover:rotate-12 transition-transform duration-500">
+                            <TrendingUp className="w-10 h-10 text-blue-400" />
+                        </div>
+                        <div className="space-y-2">
+                             <h3 className="text-3xl font-black tracking-tighter leading-none">Smart Efficiency</h3>
+                             <p className="text-slate-400 font-medium leading-relaxed">System-wide resource allocation is currently 88% optimized.</p>
+                        </div>
+                        <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                            <span className="text-[10px] font-black uppercase text-blue-400 block mb-2 tracking-[0.2em]">Next Suggested Action</span>
+                            <p className="text-sm font-bold text-slate-200">Shift chiller loads in Sector 4 by 45 minutes to avoid peak tariff.</p>
+                        </div>
+                        <button className="w-full bg-white text-slate-900 py-4 rounded-2xl font-black shadow-[0_15px_30px_-5px_rgba(255,255,255,0.2)] hover:bg-slate-100 transition-all active:scale-95">Apply Optimization</button>
                     </div>
-                    {/* Abstract background shape */}
-                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-500 opacity-20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+                    {/* Background visual element */}
+                    <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-600 opacity-20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
                 </div>
             </div>
         </div>
     );
 };
 
-const StatCard = ({ icon, title, value, trend, color }) => (
-    <div className="bg-white p-8 rounded-3xl shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div className="flex items-center justify-between mb-6">
-            <div className={`${color} p-4 rounded-2xl`}>{icon}</div>
-            <span className="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">{title}</span>
+const StatCard = ({ icon, title, value, trend, positive }) => (
+    <div className="bg-white p-8 rounded-[2rem] shadow-[0_15px_40px_-5px_rgba(0,0,0,0.02)] border border-slate-100 hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1.5 group">
+        <div className="flex items-center justify-between mb-8">
+            <div className="bg-slate-50 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">{icon}</div>
+            <div className={`px-3 py-1 rounded-full text-[10px] font-black tracking-tight ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                {trend}
+            </div>
         </div>
-        <div className="flex flex-col">
-            <span className="text-4xl font-black text-gray-900 mb-1 leading-tight">{value}</span>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">{trend}</span>
+        <div className="space-y-1">
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">{title}</span>
+            <div className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">{value}</div>
         </div>
     </div>
 );
 
-const ActivityItem = ({ label, desc, time, status }) => (
-    <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group">
-        <div className={`mt-1 h-3 w-3 rounded-full flex-shrink-0 ${
-            status === 'success' ? 'bg-emerald-500' : 
-            status === 'warning' ? 'bg-rose-500' : 'bg-blue-500'
+const ActivityItem = ({ label, desc, time, type }) => (
+    <div className="flex items-start gap-5 p-6 hover:bg-slate-50 rounded-3xl transition-all border border-transparent hover:border-slate-100 group cursor-default">
+        <div className={`mt-1.5 h-3 w-3 rounded-full shrink-0 ring-4 ${
+            type === 'SUCCESS' ? 'bg-emerald-500 ring-emerald-50' : 
+            type === 'WARNING' ? 'bg-rose-500 ring-rose-50' : 'bg-blue-500 ring-blue-50'
         }`}></div>
-        <div className="flex-grow">
-            <div className="flex justify-between items-center mb-1">
-                <h4 className="font-bold text-gray-900 leading-none">{label}</h4>
-                <span className="text-xs font-medium text-gray-400">{time}</span>
+        <div className="space-y-1 flex-grow">
+            <div className="flex justify-between items-center">
+                <h4 className="font-black text-slate-900 tracking-tight text-lg leading-none">{label}</h4>
+                <span className="text-xs font-black text-slate-400 uppercase">{time} ago</span>
             </div>
-            <p className="text-sm text-gray-500 font-medium leading-relaxed group-hover:text-gray-700">{desc}</p>
+            <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl">{desc}</p>
         </div>
     </div>
 );
