@@ -17,19 +17,19 @@ const Dashboard = () => {
             <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 animate-in fade-in slide-in-from-left duration-700">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                        <div className="h-8 w-1.5 bg-blue-600 rounded-full"></div>
+                        <div className="h-8 w-1.5 bg-accent-gold rounded-full"></div>
                         <span className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Operational OS</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Campus Overview</h1>
+                    <h1 className="text-4xl md:text-6xl font-black text-primary-dark tracking-tight">Campus Overview</h1>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div className="relative group lg:w-80 w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-blue-600 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-accent-orange transition-colors" />
                         <input 
                             type="text" 
                             placeholder="Search systems..." 
-                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm"
+                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-accent-gold/10 focus:border-accent-gold transition-all shadow-sm"
                         />
                     </div>
                 </div>
@@ -38,28 +38,28 @@ const Dashboard = () => {
             {/* Premium KPI Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12">
                 <StatCard 
-                    icon={<Users className="w-6 h-6 text-blue-600" />} 
+                    icon={<Users className="w-6 h-6 text-secondary-blue" />} 
                     title="Active Sessions" 
                     value="1,284" 
                     trend="+12% YoY"
                     positive={true}
                 />
                 <StatCard 
-                    icon={<Ticket className="w-6 h-6 text-indigo-600" />} 
+                    icon={<Ticket className="w-6 h-6 text-primary-dark" />} 
                     title="Pending Ops" 
                     value="42" 
                     trend="5 Critical"
                     positive={false}
                 />
                 <StatCard 
-                    icon={<Activity className="w-6 h-6 text-rose-600" />} 
+                    icon={<Activity className="w-6 h-6 text-accent-orange" />} 
                     title="Core Load" 
                     value="24%" 
                     trend="Stable"
                     positive={true}
                 />
                 <StatCard 
-                    icon={<Zap className="w-6 h-6 text-amber-600" />} 
+                    icon={<Zap className="w-6 h-6 text-accent-gold" />} 
                     title="Power Flow" 
                     value="452 kW" 
                     trend="Normal"
@@ -73,12 +73,12 @@ const Dashboard = () => {
                 <div className="lg:col-span-8 bg-white rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-100 p-8 md:p-12">
                     <div className="flex items-center justify-between mb-10">
                         <div className="flex items-center gap-4">
-                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl shadow-slate-200">
-                                <LayoutDashboard className="text-white w-6 h-6" />
+                            <div className="bg-primary-dark p-3 rounded-2xl shadow-xl shadow-slate-200">
+                                <LayoutDashboard className="text-accent-gold w-6 h-6" />
                             </div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">System Intelligence</h2>
+                            <h2 className="text-2xl font-black text-primary-dark tracking-tight">System Intelligence</h2>
                         </div>
-                        <button className="text-xs font-black text-blue-600 flex items-center gap-2 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-all">
+                        <button className="text-xs font-black text-accent-orange flex items-center gap-2 hover:bg-accent-gold/10 px-4 py-2.5 rounded-xl transition-all">
                            Live Activity <ChevronRight size={14} />
                         </button>
                     </div>
@@ -106,23 +106,23 @@ const Dashboard = () => {
                 </div>
 
                 {/* Efficiency Widget */}
-                <div className="lg:col-span-4 bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 text-white flex flex-col justify-between overflow-hidden relative group">
+                <div className="lg:col-span-4 bg-primary-dark rounded-[2.5rem] shadow-2xl p-10 text-white flex flex-col justify-between overflow-hidden relative group">
                     <div className="relative z-10 space-y-6">
                         <div className="p-4 bg-white/10 rounded-2xl w-max group-hover:rotate-12 transition-transform duration-500">
-                            <TrendingUp className="w-10 h-10 text-blue-400" />
+                            <TrendingUp className="w-10 h-10 text-accent-gold" />
                         </div>
                         <div className="space-y-2">
                              <h3 className="text-3xl font-black tracking-tighter leading-none">Smart Efficiency</h3>
                              <p className="text-slate-400 font-medium leading-relaxed">System-wide resource allocation is currently 88% optimized.</p>
                         </div>
                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <span className="text-[10px] font-black uppercase text-blue-400 block mb-2 tracking-[0.2em]">Next Suggested Action</span>
+                            <span className="text-[10px] font-black uppercase text-accent-gold block mb-2 tracking-[0.2em]">Next Suggested Action</span>
                             <p className="text-sm font-bold text-slate-200">Shift chiller loads in Sector 4 by 45 minutes to avoid peak tariff.</p>
                         </div>
-                        <button className="w-full bg-white text-slate-900 py-4 rounded-2xl font-black shadow-[0_15px_30px_-5px_rgba(255,255,255,0.2)] hover:bg-slate-100 transition-all active:scale-95">Apply Optimization</button>
+                        <button className="w-full bg-accent-gold text-primary-dark py-4 rounded-2xl font-black shadow-[0_15px_30px_-5px_rgba(255,193,37,0.2)] hover:bg-amber-400 transition-all active:scale-95">Apply Optimization</button>
                     </div>
                     {/* Background visual element */}
-                    <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-600 opacity-20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
+                    <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-secondary-blue opacity-20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
                 </div>
             </div>
         </div>
@@ -139,7 +139,7 @@ const StatCard = ({ icon, title, value, trend, positive }) => (
         </div>
         <div className="space-y-1">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">{title}</span>
-            <div className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">{value}</div>
+            <div className="text-4xl lg:text-5xl font-black text-primary-dark tracking-tighter">{value}</div>
         </div>
     </div>
 );
@@ -148,11 +148,11 @@ const ActivityItem = ({ label, desc, time, type }) => (
     <div className="flex items-start gap-5 p-6 hover:bg-slate-50 rounded-3xl transition-all border border-transparent hover:border-slate-100 group cursor-default">
         <div className={`mt-1.5 h-3 w-3 rounded-full shrink-0 ring-4 ${
             type === 'SUCCESS' ? 'bg-emerald-500 ring-emerald-50' : 
-            type === 'WARNING' ? 'bg-rose-500 ring-rose-50' : 'bg-blue-500 ring-blue-50'
+            type === 'WARNING' ? 'bg-accent-orange ring-rose-50' : 'bg-secondary-blue ring-blue-50'
         }`}></div>
         <div className="space-y-1 flex-grow">
             <div className="flex justify-between items-center">
-                <h4 className="font-black text-slate-900 tracking-tight text-lg leading-none">{label}</h4>
+                <h4 className="font-black text-primary-dark tracking-tight text-lg leading-none">{label}</h4>
                 <span className="text-xs font-black text-slate-400 uppercase">{time} ago</span>
             </div>
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl">{desc}</p>
