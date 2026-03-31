@@ -1,20 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary-blue: var(--secondary-blue);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-orange: var(--accent-orange);
+  --color-neutral-tan: var(--neutral-tan);
+  --color-text-light: var(--text-light);
+  
+  --font-sans: "Open Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: "Raleway", system-ui, sans-serif;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
+    --primary-dark: #1D2B36;
+    --secondary-blue: #264E68;
+    --accent-gold: #FFC125;
+    --accent-orange: #FFA500;
+    --neutral-tan: #E39B5D;
+    --text-light: #F2F2F2;
+    
+    --font-sans: 'Open Sans', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Raleway', system-ui, sans-serif;
   }
 
   body {
-    @apply antialiased text-slate-600 bg-white selection:bg-blue-100 selection:text-blue-900;
+    @apply antialiased text-slate-900 bg-white selection:bg-blue-100 selection:text-blue-900;
     font-family: var(--font-sans);
+    line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tight text-slate-900;
+    @apply font-bold tracking-tight;
     font-family: var(--font-heading);
+    line-height: 1.2;
+    color: var(--primary-dark);
   }
+
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+}
+
+.navbar {
+  background-color: var(--primary-dark);
+  color: var(--accent-gold);
+  border-bottom: 2px solid var(--secondary-blue);
 }
 
 /* Custom Base Overrides for a Premium Feel */

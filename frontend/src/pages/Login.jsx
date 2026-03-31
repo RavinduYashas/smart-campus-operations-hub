@@ -56,24 +56,24 @@ const Login = () => {
         <div className="relative flex flex-col items-center justify-center min-h-[90vh] px-6 overflow-hidden bg-slate-50">
             {/* Background Decorations */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-100 rounded-full blur-[100px] opacity-60"></div>
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-100 rounded-full blur-[100px] opacity-60"></div>
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-secondary-blue/10 rounded-full blur-[100px] opacity-60"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-dark/10 rounded-full blur-[100px] opacity-60"></div>
             </div>
 
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-700">
                 {/* Branding Above Card */}
                 <div className="flex flex-col items-center mb-8 text-center">
-                    <div className="bg-blue-600 p-3.5 rounded-[1.5rem] shadow-2xl shadow-blue-200 mb-6 rotate-3">
-                        <Building2 className="text-white h-8 w-8" />
+                    <div className="bg-accent-gold p-3.5 rounded-[1.5rem] shadow-2xl shadow-amber-900/20 mb-6 rotate-3">
+                        <Building2 className="text-primary-dark h-8 w-8" />
                     </div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none mb-3">SmartCampus Hub</h1>
+                    <h1 className="text-4xl font-black text-primary-dark tracking-tight leading-none mb-3">SmartCampus Hub</h1>
                     <p className="text-slate-500 font-bold tracking-widest text-[10px] uppercase">Centralized Operations OS</p>
                 </div>
 
                 {/* Login Card */}
                 <div className="bg-white/80 backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-white flex flex-col group">
                     <div className="w-full text-center mb-8">
-                        <h2 className="text-2xl font-black text-slate-800 mb-2">Welcome Back</h2>
+                        <h2 className="text-2xl font-black text-primary-dark mb-2">Welcome Back</h2>
                         <p className="text-slate-400 font-medium text-sm leading-relaxed">
                             Log in to your institutional account to continue.
                         </p>
@@ -111,13 +111,13 @@ const Login = () => {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider ml-1">Email Address</label>
                             <div className="relative group/input">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-blue-500 transition-colors" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-accent-orange transition-colors" />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="admin@smart.com"
-                                    className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                    className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none"
                                     required
                                 />
                             </div>
@@ -126,13 +126,13 @@ const Login = () => {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider ml-1">Password</label>
                             <div className="relative group/input">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-blue-500 transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-accent-orange transition-colors" />
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                    className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none"
                                     required
                                 />
                             </div>
@@ -141,7 +141,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-3 py-4 px-8 bg-slate-900 text-white rounded-2xl font-black text-sm shadow-xl shadow-slate-200 hover:bg-black hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none mt-2"
+                            className="w-full flex items-center justify-center gap-3 py-4 px-8 bg-primary-dark text-white rounded-2xl font-black text-sm shadow-xl shadow-slate-200 hover:bg-black hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none mt-2"
                         >
                             {isLoading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -156,7 +156,7 @@ const Login = () => {
 
                     <div className="mt-8 pt-6 border-t border-slate-50 w-full flex flex-col items-center gap-4">
                         <div className="flex items-center gap-2 text-slate-300 font-bold text-[10px] uppercase tracking-[0.2em]">
-                             <ShieldCheck size={14} className="text-blue-500" /> End-to-End Secure
+                             <ShieldCheck size={14} className="text-accent-gold" /> End-to-End Secure
                         </div>
                     </div>
                 </div>
