@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    @apply antialiased text-slate-600 bg-white selection:bg-blue-100 selection:text-blue-900;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tight text-slate-900;
+    font-family: var(--font-heading);
+  }
+}
+
+/* Custom Base Overrides for a Premium Feel */
+@layer components {
+  .premium-gradient {
+    @apply bg-gradient-to-br from-blue-600 to-indigo-700;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+}
+
+/* Smooth Transitions and Base Animation Overrides */
+html {
+  scroll-behavior: smooth;
+}
+
+#root {
+  @apply min-h-screen flex flex-col w-full;
+  /* Fixed width removed to ensure responsiveness */
+}
