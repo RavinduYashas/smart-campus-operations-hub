@@ -35,7 +35,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Open endpoints mapping (React app can reach this freely)
-                        .requestMatchers("/", "/login**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/google/callback").permitAll()
+                        .requestMatchers("/api/auth/me").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
+                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/user/**").authenticated() // Generic authentication
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
