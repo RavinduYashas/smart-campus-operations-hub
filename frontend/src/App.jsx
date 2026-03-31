@@ -1,121 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import AdminPanel from './pages/AdminPanel';
+import TicketPage from './pages/TicketPage';
+import ReportsPage from './pages/ReportsPage';
+import Unauthorized from './pages/Unauthorized';
+
+const TokenHandler = () => {
+    const [searchParams] = useSearchParams();
+    const { login } = useAuth();
+    const token = searchParams.get('token');
+
+    useEffect(() => {
+        if (token) {
+            login(token);
+            // Clean up the URL
+            window.history.replaceState({}, document.title, "/dashboard");
+        }
+    }, [token, login]);
+
+    if (token) return <Navigate to="/dashboard" replace />;
+    return <Login />;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+    return (
+        <AuthProvider>
+            <Router>
+                <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+                    <Navbar />
+                    <main className="flex-grow">
+                        <Routes>
+                            <Route path="/login" element={<TokenHandler />} />
+                            <Route path="/" element={<Navigate to="/login" replace />} />
+                            
+                            {/* Generic Protected Dashboard */}
+                            <Route element={<ProtectedRoute />}>
+                                <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/unauthorized" element={<Unauthorized />} />
+                            </Route>
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+                            {/* Role-Specific Protected Routes */}
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                                <Route path="/admin" element={<AdminPanel />} />
+                            </Route>
 
-      <div className="ticks"></div>
+                            <Route element={<ProtectedRoute allowedRoles={['TECHNICIAN']} />}>
+                                <Route path="/tickets" element={<TicketPage />} />
+                            </Route>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+                            <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+                                <Route path="/reports" element={<ReportsPage />} />
+                            </Route>
+                        </Routes>
+                    </main>
+                </div>
+            </Router>
+        </AuthProvider>
+    );
 }
 
-export default App
+export default App;
