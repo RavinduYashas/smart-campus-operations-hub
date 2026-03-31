@@ -18,9 +18,9 @@ const Dashboard = () => {
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
                         <div className="h-8 w-1.5 bg-accent-gold rounded-full"></div>
-                        <span className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Operational OS</span>
+                        <span className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Operational OS</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black text-primary-dark tracking-tight">Campus Overview</h1>
+                    <h1 className="text-4xl md:text-6xl font-bold text-primary-dark tracking-tight">Campus Overview</h1>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -29,7 +29,7 @@ const Dashboard = () => {
                         <input 
                             type="text" 
                             placeholder="Search systems..." 
-                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-accent-gold/10 focus:border-accent-gold transition-all shadow-sm"
+                            className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-accent-gold/10 focus:border-accent-gold transition-all shadow-sm"
                         />
                     </div>
                 </div>
@@ -76,9 +76,9 @@ const Dashboard = () => {
                             <div className="bg-primary-dark p-3 rounded-2xl shadow-xl shadow-slate-200">
                                 <LayoutDashboard className="text-accent-gold w-6 h-6" />
                             </div>
-                            <h2 className="text-2xl font-black text-primary-dark tracking-tight">System Intelligence</h2>
+                            <h2 className="text-2xl font-bold text-primary-dark tracking-tight">System Intelligence</h2>
                         </div>
-                        <button className="text-xs font-black text-accent-orange flex items-center gap-2 hover:bg-accent-gold/10 px-4 py-2.5 rounded-xl transition-all">
+                        <button className="text-xs font-bold text-accent-orange flex items-center gap-2 hover:bg-accent-gold/10 px-4 py-2.5 rounded-xl transition-all">
                            Live Activity <ChevronRight size={14} />
                         </button>
                     </div>
@@ -112,14 +112,14 @@ const Dashboard = () => {
                             <TrendingUp className="w-10 h-10 text-accent-gold" />
                         </div>
                         <div className="space-y-2">
-                             <h3 className="text-3xl font-black tracking-tighter leading-none">Smart Efficiency</h3>
+                             <h3 className="text-3xl font-bold tracking-tighter leading-none">Smart Efficiency</h3>
                              <p className="text-slate-400 font-medium leading-relaxed">System-wide resource allocation is currently 88% optimized.</p>
                         </div>
                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <span className="text-[10px] font-black uppercase text-accent-gold block mb-2 tracking-[0.2em]">Next Suggested Action</span>
-                            <p className="text-sm font-bold text-slate-200">Shift chiller loads in Sector 4 by 45 minutes to avoid peak tariff.</p>
+                            <span className="text-[10px] font-bold uppercase text-accent-gold block mb-2 tracking-[0.2em]">Next Suggested Action</span>
+                            <p className="text-sm font-semibold text-slate-200">Shift chiller loads in Sector 4 by 45 minutes to avoid peak tariff.</p>
                         </div>
-                        <button className="w-full bg-accent-gold text-primary-dark py-4 rounded-2xl font-black shadow-[0_15px_30px_-5px_rgba(255,193,37,0.2)] hover:bg-amber-400 transition-all active:scale-95">Apply Optimization</button>
+                        <button className="w-full bg-accent-gold text-primary-dark py-4 rounded-2xl font-bold shadow-[0_15px_30px_-5px_rgba(255,193,37,0.2)] hover:bg-amber-400 transition-all active:scale-95">Apply Optimization</button>
                     </div>
                     {/* Background visual element */}
                     <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-secondary-blue opacity-20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
@@ -133,13 +133,13 @@ const StatCard = ({ icon, title, value, trend, positive }) => (
     <div className="bg-white p-8 rounded-[2rem] shadow-[0_15px_40px_-5px_rgba(0,0,0,0.02)] border border-slate-100 hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1.5 group">
         <div className="flex items-center justify-between mb-8">
             <div className="bg-slate-50 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">{icon}</div>
-            <div className={`px-3 py-1 rounded-full text-[10px] font-black tracking-tight ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+            <div className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-tight ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                 {trend}
             </div>
         </div>
         <div className="space-y-1">
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">{title}</span>
-            <div className="text-4xl lg:text-5xl font-black text-primary-dark tracking-tighter">{value}</div>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{title}</span>
+            <div className="text-4xl lg:text-5xl font-bold text-primary-dark tracking-tighter">{value}</div>
         </div>
     </div>
 );
@@ -152,8 +152,8 @@ const ActivityItem = ({ label, desc, time, type }) => (
         }`}></div>
         <div className="space-y-1 flex-grow">
             <div className="flex justify-between items-center">
-                <h4 className="font-black text-primary-dark tracking-tight text-lg leading-none">{label}</h4>
-                <span className="text-xs font-black text-slate-400 uppercase">{time} ago</span>
+                <h4 className="font-bold text-primary-dark tracking-tight text-lg leading-none">{label}</h4>
+                <span className="text-xs font-bold text-slate-400 uppercase">{time} ago</span>
             </div>
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl">{desc}</p>
         </div>
