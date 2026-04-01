@@ -6,18 +6,18 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
-import AdminPanel from './pages/AdminPanel';
-import TicketPage from './pages/TicketPage';
-import ReportsPage from './pages/ReportsPage';
+import AdminPanel from './pages/admin/AdminPanel';
+import TicketPage from './pages/technician/TicketPage';
+import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
-import AssetsCatalogue from './pages/AssetsCatalogue';
-import BookingManagement from './pages/BookingManagement';
-import IncidentTicketing from './pages/IncidentTicketing';
+import AssetsCatalogue from './pages/user/AssetsCatalogue';
+import BookingManagement from './pages/user/BookingManagement';
+import IncidentTicketing from './pages/user/IncidentTicketing';
 import NotificationHub from './pages/NotificationHub';
-import AdminBookingQueue from './pages/AdminBookingQueue';
-import AssetManagement from './pages/AssetManagement';
-import GlobalTicketView from './pages/GlobalTicketView';
-import TechnicianQueue from './pages/TechnicianQueue';
+import AdminBookingQueue from './pages/admin/AdminBookingQueue';
+import AssetManagement from './pages/admin/AssetManagement';
+import GlobalTicketView from './pages/admin/GlobalTicketView';
+import TechnicianQueue from './pages/technician/TechnicianQueue';
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();

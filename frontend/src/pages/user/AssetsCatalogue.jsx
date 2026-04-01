@@ -14,7 +14,7 @@ import React from 'react';
 const AssetsCatalogue = () => {
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">Assets & Facilities</h1>
+      <h1 className="text-3xl font-semibold mb-4">Assets & Facilities</h1>
       <p className="text-gray-600 mb-8">Browse and search for lecture halls, laboratories, and specialized equipment.</p>
       
       {/* Search & Filter UI (Skeleton) */}
@@ -29,9 +29,9 @@ const AssetsCatalogue = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Resource Cards Placeholder */}
         <div className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
-             <h3 className="font-bold">L-01 Lecture Hall</h3>
+             <h3 className="font-semibold">L-01 Lecture Hall</h3>
              <p className="text-sm text-gray-500">Capacity: 120 | Location: Block A</p>
-             <span className="inline-block mt-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">ACTIVE</span>
+             <span className="inline-block mt-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">ACTIVE</span>
         </div>
       </div>
     </div>

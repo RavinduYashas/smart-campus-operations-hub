@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-    LayoutDashboard, 
-    ShieldAlert, 
-    Ticket, 
-    BarChart, 
+import {
+    LayoutDashboard,
+    ShieldAlert,
+    Ticket,
+    BarChart,
     LogOut,
     UserCircle,
     Building2,
@@ -26,51 +26,60 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path;
 
     const navItems = [
-        { path: '/dashboard', label: 'Monitor', icon: <LayoutDashboard size={18} />, roles: ['USER', 'ADMIN', 'TECHNICIAN', 'MANAGER'] },
-        
-        // Module A & B (User)
-        { path: '/assets', label: 'Catalogue', icon: <Building2 size={18} />, roles: ['USER'] },
-        { path: '/my-bookings', label: 'Bookings', icon: <Calendar size={18} />, roles: ['USER'] },
-        
-        // Module C (User)
-        { path: '/report-fault', label: 'Report', icon: <AlertCircle size={18} />, roles: ['USER'] },
+        // Dashboard — always first
+        { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={15} />, roles: ['USER', 'ADMIN', 'TECHNICIAN', 'MANAGER'] },
 
-        // Module A, B, C (Admin)
-        { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={18} />, roles: ['ADMIN'] },
-        { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={18} />, roles: ['ADMIN'] },
-        { path: '/admin/tickets', label: 'Operations', icon: <Ticket size={18} />, roles: ['ADMIN'] },
+        // USER role — Module A, B, C
+        { path: '/assets', label: 'Catalogue', icon: <Building2 size={15} />, roles: ['USER'] },
+        { path: '/my-bookings', label: 'My Bookings', icon: <Calendar size={15} />, roles: ['USER'] },
+        { path: '/report-fault', label: 'Report Fault', icon: <AlertCircle size={15} />, roles: ['USER'] },
+        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['USER'] },
 
-        // Module C (Technician)
-        { path: '/technician/tasks', label: 'My Tasks', icon: <Ticket size={18} />, roles: ['TECHNICIAN'] },
+        // ADMIN role — in logical order
+        { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
+        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['ADMIN'] },
 
-        // Module D (Global Notifications)
-        { path: '/notifications', label: 'Alerts', icon: <Bell size={18} />, roles: ['USER', 'ADMIN', 'TECHNICIAN'] },
+        // TECHNICIAN role
+        { path: '/technician/tasks', label: 'My Tasks', icon: <Ticket size={15} />, roles: ['TECHNICIAN'] },
+        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['TECHNICIAN'] },
 
-        { path: '/reports', label: 'Strategy', icon: <BarChart size={18} />, roles: ['MANAGER'] },
+        // MANAGER role
+        { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER'] },
     ];
 
     const filteredItems = user ? navItems.filter(item => item.roles.includes(user.role)) : [];
 
     return (
         <nav className="navbar backdrop-blur-xl sticky top-0 z-[100] transition-all">
-            <div className="max-w-7xl mx-auto px-6 sm:px-10">
-                <div className="flex justify-between h-20">
+            <div className="max-w-7xl mx-auto px-5 sm:px-4">
+                <div className="flex justify-between h-[4.25rem]">
                     {/* Logo and Desktop Nav */}
-                    <div className="flex items-center gap-12">
-                        <Link to="/" className="flex items-center gap-3 group shrink-0">
-                            <div className="bg-accent-gold p-2.5 rounded-2xl group-hover:rotate-6 transition-transform duration-500 shadow-lg shadow-amber-900/20">
-                                <Building2 className="text-primary-dark h-7 w-7" />
-                            </div>
-                            <span className="text-2xl font-black text-white tracking-tighter">SmartCampus</span>
+                    <div className="flex items-center gap-8">
+                        <Link to="/" className="flex items-center group shrink-0 select-none">
+                            <span className="text-xl sm:text-xl font-bold text-white tracking-widest flex items-center overflow-hidden pb-1">
+                                SM
+                                <svg
+                                    className="w-7 h-7 sm:w-8 sm:h-8 mx-0.5 text-accent-gold group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path d="M12 2L1.5 22H6.8L12 11.5L17.2 22H22.5L12 2Z" />
+                                    <path d="M7.5 17H16.5V20H7.5V17Z" />
+                                </svg>
+                                RTCAMPUS
+                            </span>
                         </Link>
-                        
+
                         {/* Desktop Navigation Links */}
                         <div className="hidden lg:flex items-center gap-1">
                             <Link
                                 to="/"
-                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-                                    isActive('/') ? 'text-accent-gold bg-white/10' : 'text-slate-300 hover:text-white hover:bg-white/5'
-                                }`}
+                                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${isActive('/') ? 'text-accent-gold bg-white/10' : 'text-slate-300 hover:text-white hover:bg-white/5'
+                                    }`}
                             >
                                 Home
                             </Link>
@@ -78,11 +87,10 @@ const Navbar = () => {
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 gap-2.5 ${
-                                        isActive(item.path)
+                                    className={`flex items-center px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 gap-2 ${isActive(item.path)
                                             ? 'bg-accent-gold/10 text-accent-gold shadow-sm border border-accent-gold/20'
                                             : 'text-slate-300 hover:text-white hover:bg-white/5'
-                                    }`}
+                                        }`}
                                 >
                                     <span className="opacity-70">{item.icon}</span>
                                     {item.label}
@@ -97,11 +105,11 @@ const Navbar = () => {
                             <div className="hidden sm:flex items-center gap-5">
                                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 group transition-all hover:bg-white/10 hover:shadow-md">
                                     <div className="flex flex-col items-end leading-none">
-                                        <span className="text-[11px] font-black uppercase text-accent-gold mb-1">{user.role}</span>
-                                        <span className="text-sm font-black text-white truncate max-w-[140px]">{user.name}</span>
+                                        <span className="text-[11px] font-bold uppercase text-accent-gold mb-1">{user.role}</span>
+                                        <span className="text-sm font-bold text-white truncate max-w-[140px]">{user.name}</span>
                                     </div>
                                     <div className="h-10 w-10 bg-gradient-to-tr from-white/10 to-white/5 rounded-xl flex items-center justify-center p-0.5">
-                                         <UserCircle className="h-full w-full text-slate-400" />
+                                        <UserCircle className="h-full w-full text-slate-400" />
                                     </div>
                                 </div>
                                 <button
@@ -114,9 +122,9 @@ const Navbar = () => {
                             </div>
                         ) : (
                             <div className="hidden sm:block">
-                                <Link 
+                                <Link
                                     to="/login"
-                                    className="bg-accent-gold text-primary-dark px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2.5 active:scale-95"
+                                    className="bg-accent-gold text-primary-dark px-8 py-2.5 rounded-2xl font-bold text-sm shadow-xl shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2.5 active:scale-95"
                                 >
                                     Sign In <ArrowRight size={18} />
                                 </Link>
@@ -124,7 +132,7 @@ const Navbar = () => {
                         )}
 
                         {/* Mobile Menu Toggle */}
-                        <button 
+                        <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="lg:hidden p-3 text-slate-300 hover:bg-white/5 rounded-2xl transition-all active:scale-90"
                         >
@@ -141,7 +149,7 @@ const Navbar = () => {
                         <Link
                             to="/"
                             onClick={() => setIsMenuOpen(false)}
-                            className={`flex items-center p-4 rounded-2xl font-bold ${isActive('/') ? 'bg-white/10 text-accent-gold' : 'text-slate-300'}`}
+                            className={`flex items-center p-4 rounded-2xl font-semibold ${isActive('/') ? 'bg-white/10 text-accent-gold' : 'text-slate-300'}`}
                         >
                             Home
                         </Link>
@@ -150,24 +158,24 @@ const Navbar = () => {
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`flex items-center gap-4 p-4 rounded-2xl font-bold ${isActive(item.path) ? 'bg-white/10 text-accent-gold' : 'text-slate-300'}`}
+                                className={`flex items-center gap-4 p-4 rounded-2xl font-semibold ${isActive(item.path) ? 'bg-white/10 text-accent-gold' : 'text-slate-300'}`}
                             >
                                 {item.icon} {item.label}
                             </Link>
                         ))}
                         <div className="pt-4 border-t border-white/10 mt-4">
                             {user ? (
-                                <button 
+                                <button
                                     onClick={() => { logout(); setIsMenuOpen(false); }}
-                                    className="w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-rose-500 bg-rose-500/10"
+                                    className="w-full flex items-center gap-4 p-4 rounded-2xl font-semibold text-rose-500 bg-rose-500/10"
                                 >
                                     <LogOut size={20} /> Sign Out
                                 </button>
                             ) : (
-                                <Link 
+                                <Link
                                     to="/login"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="w-full flex items-center justify-between p-4 rounded-2xl font-bold bg-accent-gold text-primary-dark shadow-lg"
+                                    className="w-full flex items-center justify-between p-4 rounded-2xl font-semibold bg-accent-gold text-primary-dark shadow-lg"
                                 >
                                     Sign In <ArrowRight size={20} />
                                 </Link>
