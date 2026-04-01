@@ -77,11 +77,17 @@ const Unauthorized = () => {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-6 justify-center">
                 <button
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => {
+                        if (window.opener) {
+                            window.close();
+                        } else {
+                            window.location.href = '/login';
+                        }
+                    }}
                     className="bg-primary-dark text-white px-10 py-5 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-slate-300 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3"
                 >
                     <Home className="w-5 h-5" />
-                    {isDomainRejection ? 'Back to Login' : 'Back to Safety'}
+                    {isDomainRejection ? (window.opener ? 'Close Window' : 'Back to Login') : 'Back to Safety'}
                 </button>
                 <button
                     className="bg-white text-primary-dark border-2 border-slate-100 px-10 py-5 rounded-2xl font-bold text-lg hover:shadow-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-3"

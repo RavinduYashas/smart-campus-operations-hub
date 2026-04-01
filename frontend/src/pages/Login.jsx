@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Building2, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -12,8 +12,34 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const handleMessage = async (event) => {
+            // Ensure message is from our own domain
+            if (event.origin !== window.location.origin) return;
+
+            if (event.data?.type === 'OAUTH_SUCCESS' && event.data?.token) {
+                setIsLoading(true);
+                // AuthContext fetchUser will run, and the parent TokenHandler will do the redirect!
+                await login(event.data.token);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [login]);
+
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        // Calculate popup position to center it on the screen
+        const width = 500;
+        const height = 600;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+        
+        window.open(
+            'http://localhost:8080/oauth2/authorization/google',
+            'Google Sign In',
+            `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,status=0,menubar=0`
+        );
     };
 
     const handleManualLogin = async (e) => {

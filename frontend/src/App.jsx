@@ -27,9 +27,16 @@ const TokenHandler = () => {
 
     useEffect(() => {
         if (token) {
-            login(token);
-            // Clean up the URL to not leak the token
-            window.history.replaceState({}, document.title, window.location.pathname);
+            if (window.opener) {
+                // If we are in a popup window, send the token to the parent window and close the popup
+                window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
+                window.close();
+                return;
+            } else {
+                // Normal redirect flow
+                login(token);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
     }, [token, login]);
 
