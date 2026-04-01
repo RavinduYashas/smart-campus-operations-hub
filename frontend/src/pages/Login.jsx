@@ -46,7 +46,16 @@ const Login = () => {
                     break;
             }
         } catch (err) {
-            setError(err.response?.data || 'Invalid email or password. Please try again.');
+            const errorCode = err.response?.data?.error;
+            if (errorCode === 'unauthorized_domain') {
+                // Redirect to the Unauthorized page with SLIIT-specific messaging
+                navigate('/unauthorized?reason=domain');
+            } else {
+                setError(
+                    err.response?.data?.message ||
+                    'Invalid email or password. Please try again.'
+                );
+            }
         } finally {
             setIsLoading(false);
         }
@@ -116,7 +125,7 @@ const Login = () => {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="admin@smart.com"
+                                    placeholder="you@my.sliit.lk"
                                     className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none"
                                     required
                                 />
