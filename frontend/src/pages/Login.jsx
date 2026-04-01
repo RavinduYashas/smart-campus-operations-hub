@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Building2, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -12,8 +12,34 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const handleMessage = async (event) => {
+            // Ensure message is from our own domain
+            if (event.origin !== window.location.origin) return;
+
+            if (event.data?.type === 'OAUTH_SUCCESS' && event.data?.token) {
+                setIsLoading(true);
+                // AuthContext fetchUser will run, and the parent TokenHandler will do the redirect!
+                await login(event.data.token);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [login]);
+
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        // Calculate popup position to center it on the screen
+        const width = 500;
+        const height = 600;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+        
+        window.open(
+            'http://localhost:8080/oauth2/authorization/google',
+            'Google Sign In',
+            `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,status=0,menubar=0`
+        );
     };
 
     const handleManualLogin = async (e) => {
@@ -46,7 +72,16 @@ const Login = () => {
                     break;
             }
         } catch (err) {
-            setError(err.response?.data || 'Invalid email or password. Please try again.');
+            const errorCode = err.response?.data?.error;
+            if (errorCode === 'unauthorized_domain') {
+                // Redirect to the Unauthorized page with SLIIT-specific messaging
+                navigate('/unauthorized?reason=domain');
+            } else {
+                setError(
+                    err.response?.data?.message ||
+                    'Invalid email or password. Please try again.'
+                );
+            }
         } finally {
             setIsLoading(false);
         }
@@ -116,7 +151,7 @@ const Login = () => {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="admin@smart.com"
+                                    placeholder="you@my.sliit.lk"
                                     className="w-full pl-11 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all outline-none"
                                     required
                                 />

@@ -27,27 +27,33 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler successHandler;
+    private final OAuth2AuthenticationFailureHandler failureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2RedirectFilter customOAuth2RedirectFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable()) // Disable for stateless API
+                .csrf(csrf -> csrf.disable()) // Disabled for stateless JWT API
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Open endpoints mapping (React app can reach this freely)
+                        // Public endpoints
                         .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/login", "/api/auth/google/callback").permitAll()
+                        // Authenticated endpoints
                         .requestMatchers("/api/auth/me").authenticated()
+                        // Role-based endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/api/user/**").authenticated() // Generic authentication
+                        .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(customOAuth2RedirectFilter, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(info -> info.userService(customOAuth2UserService))
                         .successHandler(successHandler)
+                        .failureHandler(failureHandler) // Redirects to /unauthorized on domain rejection
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -61,7 +67,6 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow Vite's localhost frontend origin
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

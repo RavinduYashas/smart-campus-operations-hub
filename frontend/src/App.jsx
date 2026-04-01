@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -21,18 +21,53 @@ import TechnicianQueue from './pages/technician/TechnicianQueue';
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
-    const { login } = useAuth();
+    const { login, user, loading } = useAuth();
     const token = searchParams.get('token');
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
-            login(token);
-            // Clean up the URL
-            window.history.replaceState({}, document.title, "/dashboard");
+            if (window.opener) {
+                // If we are in a popup window, send the token to the parent window and close the popup
+                window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
+                window.close();
+                return;
+            } else {
+                // Normal redirect flow
+                login(token);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
     }, [token, login]);
 
-    if (token) return <Navigate to="/dashboard" replace />;
+    useEffect(() => {
+        if (user && !loading) {
+            switch (user.role) {
+                case 'ADMIN':
+                    navigate('/admin', { replace: true });
+                    break;
+                case 'MANAGER':
+                    navigate('/reports', { replace: true });
+                    break;
+                case 'TECHNICIAN':
+                    navigate('/tickets', { replace: true });
+                    break;
+                default:
+                    navigate('/dashboard', { replace: true });
+                    break;
+            }
+        }
+    }, [user, loading, navigate]);
+
+    // Show a spinner while the authentication check is happening
+    if (token || loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-dark"></div>
+            </div>
+        );
+    }
+
     return <Login />;
 };
 
@@ -46,11 +81,13 @@ function App() {
                         <Routes>
                             <Route path="/login" element={<TokenHandler />} />
                             <Route path="/" element={<Home />} />
-                            
+
+                            {/* Public: domain-rejected users land here unauthenticated */}
+                            <Route path="/unauthorized" element={<Unauthorized />} />
+
                             {/* Generic Protected Dashboard */}
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/unauthorized" element={<Unauthorized />} />
                                 <Route path="/notifications" element={<NotificationHub />} />
                             </Route>
 
