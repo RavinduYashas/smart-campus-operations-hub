@@ -15,10 +15,10 @@ public class DataInitializer {
     public CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             String[][] testUsers = {
-                {"Admin User", "admin@smart.com", "admin123", User.Role.ADMIN.name()},
-                {"Manager User", "manager@smart.com", "manager123", User.Role.MANAGER.name()},
-                {"Technician User", "tech@smart.com", "tech123", User.Role.TECHNICIAN.name()},
-                {"Regular User", "user@smart.com", "user123", User.Role.USER.name()}
+                {"Admin User", "admin@my.sliit.lk", "admin123", User.Role.ADMIN.name()},
+                {"Manager User", "manager@my.sliit.lk", "manager123", User.Role.MANAGER.name()},
+                {"Technician User", "tech@my.sliit.lk", "tech123", User.Role.TECHNICIAN.name()},
+                {"Student User", "student@my.sliit.lk", "student123", User.Role.USER.name()}
             };
 
             for (String[] userData : testUsers) {
