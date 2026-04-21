@@ -18,6 +18,9 @@ import AdminBookingQueue from './pages/admin/AdminBookingQueue';
 import AssetManagement from './pages/admin/AssetManagement';
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 import TechnicianQueue from './pages/technician/TechnicianQueue';
+import AssetsCatalogue from './pages/resource/AssetsCatalogue';
+import AssetManagement from './pages/resource/AssetManagement';
+
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -113,6 +116,14 @@ function App() {
 
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
+                            </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
+                                <Route path="/assets" element={<AssetsCatalogue />} />
+                            </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                                <Route path="/admin/assets" element={<AssetManagement />} />
                             </Route>
                         </Routes>
                     </main>
