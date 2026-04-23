@@ -50,7 +50,7 @@ public class BookingController {
     }
 
     @PostMapping("/{id}/cancel")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public ResponseEntity<BookingResponseDTO> cancelBooking(
             @PathVariable String id,
             Authentication authentication) {
