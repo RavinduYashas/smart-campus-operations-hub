@@ -88,6 +88,16 @@ const Navbar = () => {
                                 <Link
                                     key={item.path}
                                     to={item.path}
+                                    onClick={(e) => {
+                                        if (item.path.includes('#') && location.pathname === item.path.split('#')[0]) {
+                                            const hash = item.path.split('#')[1];
+                                            const el = document.getElementById(hash);
+                                            if (el) {
+                                                e.preventDefault();
+                                                el.scrollIntoView({ behavior: 'smooth' });
+                                            }
+                                        }
+                                    }}
                                     className={`flex items-center px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 gap-2 ${isActive(item.path)
                                             ? 'bg-accent-gold/10 text-accent-gold shadow-sm border border-accent-gold/20'
                                             : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -105,7 +115,19 @@ const Navbar = () => {
                         {user ? (
                             <div className="hidden sm:flex items-center gap-5">
                                 {(user.role === 'USER' || user.role === 'MANAGER') && (
-                                    <Link to={user.role === 'MANAGER' ? '/reports' : '/my-bookings'} className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95">
+                                    <Link 
+                                        to={user.role === 'MANAGER' ? '/reports#booking-section' : '/my-bookings'} 
+                                        onClick={(e) => {
+                                            if (user.role === 'MANAGER' && location.pathname === '/reports') {
+                                                const el = document.getElementById('booking-section');
+                                                if (el) {
+                                                    e.preventDefault();
+                                                    el.scrollIntoView({ behavior: 'smooth' });
+                                                }
+                                            }
+                                        }}
+                                        className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95"
+                                    >
                                         <Calendar size={16} /> Book Facility
                                     </Link>
                                 )}
