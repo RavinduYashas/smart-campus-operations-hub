@@ -11,6 +11,7 @@ import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
 import BookingVerification from './pages/BookingVerification';
+import ManualValidation from './pages/admin/ManualValidation';
 import BookingManagement from './pages/user/BookingManagement';
 import IncidentTicketing from './pages/user/IncidentTicketing';
 import NotificationHub from './pages/NotificationHub';
@@ -108,6 +109,7 @@ function App() {
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
+                                <Route path="/admin/validate" element={<ManualValidation />} />
                                 <Route path="/admin/assets" element={<AssetManagement />} />
                                 <Route path="/admin/tickets" element={<GlobalTicketView />} />
                             </Route>
@@ -119,6 +121,7 @@ function App() {
 
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
+                                <Route path="/admin/validate" element={<ManualValidation />} />
                             </Route>
                         </Routes>
                     </main>

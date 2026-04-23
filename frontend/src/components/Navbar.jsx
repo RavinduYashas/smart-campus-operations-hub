@@ -15,7 +15,8 @@ import {
     Bell,
     Calendar,
     AlertCircle,
-    CheckCircle2
+    CheckCircle2,
+    ShieldCheck
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -39,6 +40,7 @@ const Navbar = () => {
         { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
         { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/validate', label: 'Validate Pass', icon: <ShieldCheck size={15} />, roles: ['ADMIN', 'MANAGER'] },
         { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['ADMIN'] },
 
