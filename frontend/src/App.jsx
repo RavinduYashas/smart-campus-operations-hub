@@ -10,22 +10,17 @@ import AdminPanel from './pages/admin/AdminPanel';
 import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
-
-// ============ CORRECTED IMPORTS ============
-// User pages
-import AssetsCatalogue from './pages/resource/AssetsCatalogue';     // Module A - Your module
-import BookingManagement from './pages/user/BookingManagement';     // Module B
-import IncidentTicketing from './pages/user/IncidentTicketing';     // Module C
-import NotificationHub from './pages/NotificationHub';              // Module D
-
-// Admin pages
+import AssetsCatalogue from './pages/user/AssetsCatalogue';
+import BookingManagement from './pages/user/BookingManagement';
+import IncidentTicketing from './pages/user/IncidentTicketing';
+import NotificationHub from './pages/NotificationHub';
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
-import AssetManagement from './pages/resource/AssetsManagement';     // Module A Admin - Your module
+import AssetManagement from './pages/admin/AssetManagement';
 import GlobalTicketView from './pages/admin/GlobalTicketView';
-
-// Technician pages
 import TechnicianQueue from './pages/technician/TechnicianQueue';
-// ===========================================
+import AssetsCatalogue from './pages/resource/AssetsCatalogue';
+import AssetManagement from './pages/resource/AssetManagement';
+
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -36,10 +31,12 @@ const TokenHandler = () => {
     useEffect(() => {
         if (token) {
             if (window.opener) {
+                // If we are in a popup window, send the token to the parent window and close the popup
                 window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
                 window.close();
                 return;
             } else {
+                // Normal redirect flow
                 login(token);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -65,6 +62,7 @@ const TokenHandler = () => {
         }
     }, [user, loading, navigate]);
 
+    // Show a spinner while the authentication check is happening
     if (token || loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -86,6 +84,8 @@ function App() {
                         <Routes>
                             <Route path="/login" element={<TokenHandler />} />
                             <Route path="/" element={<Home />} />
+
+                            {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
 
                             {/* Generic Protected Dashboard */}
@@ -101,7 +101,7 @@ function App() {
                                 <Route path="/report-fault" element={<IncidentTicketing />} />
                             </Route>
 
-                            {/* Admin Routes */}
+                            {/* Role-Specific Protected Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
@@ -109,15 +109,21 @@ function App() {
                                 <Route path="/admin/tickets" element={<GlobalTicketView />} />
                             </Route>
 
-                            {/* Technician Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['TECHNICIAN']} />}>
                                 <Route path="/tickets" element={<TicketPage />} />
                                 <Route path="/technician/tasks" element={<TechnicianQueue />} />
                             </Route>
 
-                            {/* Manager Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
+                            </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
+                                <Route path="/assets" element={<AssetsCatalogue />} />
+                            </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                                <Route path="/admin/assets" element={<AssetManagement />} />
                             </Route>
                         </Routes>
                     </main>
