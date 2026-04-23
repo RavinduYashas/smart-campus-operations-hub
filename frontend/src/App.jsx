@@ -13,7 +13,7 @@ import Unauthorized from './pages/Unauthorized';
 
 // ============ CORRECTED IMPORTS ============
 // User pages
-import AssetsCatalogue from './pages/resource/AssetsCatalogue';     // Module A - Your module
+import AssetsCatalogue from './pages/resource/AssetCatalogue';     // Module A - Your module
 import BookingManagement from './pages/user/BookingManagement';     // Module B
 import IncidentTicketing from './pages/user/IncidentTicketing';     // Module C
 import NotificationHub from './pages/NotificationHub';              // Module D
