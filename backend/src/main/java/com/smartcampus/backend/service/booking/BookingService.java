@@ -77,6 +77,12 @@ public class BookingService {
         return mapToDTO(bookingRepository.save(booking));
     }
 
+    public BookingResponseDTO verifyBooking(String id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        return mapToDTO(booking);
+    }
+
     private BookingResponseDTO mapToDTO(Booking booking) {
         BookingResponseDTO dto = new BookingResponseDTO();
         dto.setId(booking.getId());

@@ -10,6 +10,7 @@ import AdminPanel from './pages/admin/AdminPanel';
 import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
+import BookingVerification from './pages/BookingVerification';
 import BookingManagement from './pages/user/BookingManagement';
 import IncidentTicketing from './pages/user/IncidentTicketing';
 import NotificationHub from './pages/NotificationHub';
@@ -86,6 +87,9 @@ function App() {
 
                             {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
+                            
+                            {/* Public Verification Route */}
+                            <Route path="/verify-booking/:id" element={<BookingVerification />} />
 
                             {/* Generic Protected Dashboard */}
                             <Route element={<ProtectedRoute />}>

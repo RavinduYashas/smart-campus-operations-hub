@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, X, Calendar, Clock, Users, Building2 } from 'lucide-react';
+import { Plus, X, Calendar, Clock, Users, Building2, QrCode } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 const BookingManagement = ({ embedded = false }) => {
     const { token } = useAuth();
@@ -9,6 +10,8 @@ const BookingManagement = ({ embedded = false }) => {
     const [facilities, setFacilities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showQRModal, setShowQRModal] = useState(false);
+    const [selectedQRBooking, setSelectedQRBooking] = useState(null);
     const [formData, setFormData] = useState({
         resourceId: '',
         date: '',
@@ -192,6 +195,18 @@ const BookingManagement = ({ embedded = false }) => {
                                                     Cancel
                                                 </button>
                                             )}
+                                            {booking.status === 'APPROVED' && (
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedQRBooking(booking);
+                                                        setShowQRModal(true);
+                                                    }}
+                                                    className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl transition-all w-full border border-emerald-100 flex items-center justify-center gap-1"
+                                                >
+                                                    <QrCode size={14} />
+                                                    QR Pass
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -303,6 +318,59 @@ const BookingManagement = ({ embedded = false }) => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* QR Code Modal */}
+            {showQRModal && selectedQRBooking && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-sm p-8 shadow-2xl relative flex flex-col items-center text-center">
+                        <button 
+                            onClick={() => setShowQRModal(false)} 
+                            className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors bg-slate-100 p-2 rounded-full"
+                        >
+                            <X size={20} />
+                        </button>
+                        
+                        <div className="mb-4 text-primary-dark">
+                            <Building2 size={32} className="mx-auto" />
+                        </div>
+                        
+                        <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-1">
+                            Booking Pass
+                        </h2>
+                        <p className="text-slate-500 text-sm font-medium mb-6">
+                            Show this QR code to security or scan at the facility entrance.
+                        </p>
+
+                        <div className="p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-inner mb-6">
+                            <QRCodeSVG 
+                                value={`http://localhost:5173/verify-booking/${selectedQRBooking.id}`}
+                                size={200}
+                                level={"H"}
+                                includeMargin={true}
+                                fgColor={"#0f172a"}
+                            />
+                        </div>
+
+                        <div className="w-full text-left bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Resource</p>
+                            <p className="text-sm font-bold text-slate-900 mb-3">{selectedQRBooking.resourceName}</p>
+                            
+                            <div className="flex justify-between">
+                                <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Date</p>
+                                    <p className="text-sm font-bold text-slate-900">{selectedQRBooking.date}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Time</p>
+                                    <p className="text-sm font-bold text-slate-900">{selectedQRBooking.startTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p className="text-xs text-slate-400 font-medium mt-6">REF-{selectedQRBooking.id.substring(0,8).toUpperCase()}</p>
                     </div>
                 </div>
             )}

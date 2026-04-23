@@ -59,4 +59,9 @@ public class BookingController {
         // Could optionally verify if the user owns the booking here in the controller or service
         return ResponseEntity.ok(bookingService.updateBookingStatus(id, updateDTO));
     }
+
+    @GetMapping("/{id}/verify")
+    public ResponseEntity<BookingResponseDTO> verifyBooking(@PathVariable String id) {
+        return ResponseEntity.ok(bookingService.verifyBooking(id));
+    }
 }
