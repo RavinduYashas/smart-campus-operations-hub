@@ -67,14 +67,55 @@ const AdminBookingQueue = () => {
     const exportToPDF = () => {
         const doc = new jsPDF();
         
-        doc.setFontSize(20);
-        doc.setTextColor(15, 23, 42); // slate-900
-        doc.text('Facility Booking Report', 14, 22);
+        const primaryDark = [15, 23, 42]; // #0f172a
+        const accentGold = [234, 179, 8]; // #eab308
         
-        doc.setFontSize(10);
-        doc.setTextColor(100, 116, 139); // slate-500
-        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
-        doc.text(`Filter Applied: ${statusFilter}`, 14, 36);
+        // Custom Header & Footer Hook
+        const addHeaderAndFooter = (data) => {
+            const pageSize = doc.internal.pageSize;
+            const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+            const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+            
+            // --- HEADER BACKGROUND ---
+            doc.setFillColor(primaryDark[0], primaryDark[1], primaryDark[2]);
+            doc.rect(0, 0, pageWidth, 28, 'F');
+            
+            // --- LOGO TEXT ---
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("SMART", 14, 18);
+            
+            doc.setTextColor(accentGold[0], accentGold[1], accentGold[2]);
+            doc.text("CAMPUS", 46, 18);
+            
+            // --- SUBTITLE ---
+            doc.setTextColor(148, 163, 184); // slate-400
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("OPERATIONS HUB", 14, 24);
+            
+            // --- REPORT TITLE ---
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("FACILITY BOOKINGS REPORT", pageWidth - 14, 18, { align: "right" });
+            
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Generated: ${new Date().toLocaleString()}`, pageWidth - 14, 24, { align: "right" });
+            
+            // --- FOOTER BACKGROUND ---
+            doc.setFillColor(248, 250, 252); // slate-50
+            doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+            
+            // --- FOOTER TEXT ---
+            doc.setTextColor(100, 116, 139);
+            doc.setFontSize(8);
+            doc.text("Confidential - Smart Campus Operations Hub © 2026", 14, pageHeight - 6);
+            
+            const str = "Page " + doc.internal.getNumberOfPages();
+            doc.text(str, pageWidth - 14, pageHeight - 6, { align: "right" });
+        };
 
         const tableColumn = ["Ref ID", "Resource", "User", "Date & Time", "Status", "Admin Note"];
         const tableRows = [];
@@ -91,17 +132,29 @@ const AdminBookingQueue = () => {
             tableRows.push(rowData);
         });
 
+        // Filter info below header
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(15, 23, 42);
+        doc.text(`Filter Applied: ${statusFilter}`, 14, 38);
+        
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 116, 139);
+        doc.text("Below is the administrative review queue matching the selected criteria.", 14, 43);
+
         autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
-            startY: 45,
-            styles: { fontSize: 8, cellPadding: 3 },
-            headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] },
+            startY: 48,
+            styles: { fontSize: 8, cellPadding: 4, font: "helvetica" },
+            headStyles: { fillColor: primaryDark, textColor: [255, 255, 255], fontStyle: 'bold' },
             alternateRowStyles: { fillColor: [248, 250, 252] },
-            margin: { top: 45 }
+            margin: { top: 35, bottom: 20 },
+            didDrawPage: addHeaderAndFooter
         });
 
-        doc.save(`Booking_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+        doc.save(`SmartCampus_Bookings_${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     const filteredBookings = useMemo(() => {
