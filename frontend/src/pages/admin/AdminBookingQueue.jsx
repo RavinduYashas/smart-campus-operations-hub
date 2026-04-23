@@ -4,8 +4,10 @@ import { useAuth } from '../../context/AuthContext';
 import { 
     X, Check, AlertCircle, Calendar, Clock, Users, Building2, 
     Search, Filter, ChevronDown, MoreVertical, ShieldCheck,
-    FileText, User, RefreshCw
+    FileText, User, RefreshCw, Download
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const AdminBookingQueue = () => {
     const { token } = useAuth();
@@ -60,6 +62,46 @@ const AdminBookingQueue = () => {
             console.error('Error updating status:', error);
             alert('Failed to update booking status.');
         }
+    };
+
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+        
+        doc.setFontSize(20);
+        doc.setTextColor(15, 23, 42); // slate-900
+        doc.text('Facility Booking Report', 14, 22);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139); // slate-500
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+        doc.text(`Filter Applied: ${statusFilter}`, 14, 36);
+
+        const tableColumn = ["Ref ID", "Resource", "User", "Date & Time", "Status", "Admin Note"];
+        const tableRows = [];
+
+        filteredBookings.forEach(booking => {
+            const rowData = [
+                `REF-${booking.id.substring(0,8).toUpperCase()}`,
+                booking.resourceName || 'Unknown',
+                booking.userEmail,
+                `${booking.date}\n${booking.startTime} - ${booking.endTime}`,
+                booking.status,
+                booking.adminReason || 'N/A'
+            ];
+            tableRows.push(rowData);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 45,
+            styles: { fontSize: 8, cellPadding: 3 },
+            headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+            margin: { top: 45 }
+        });
+
+        doc.save(`Booking_Report_${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     const filteredBookings = useMemo(() => {
@@ -145,8 +187,15 @@ const AdminBookingQueue = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         <button 
+                            onClick={exportToPDF}
+                            className="flex items-center gap-2 px-5 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-black transition-all shadow-md shadow-slate-900/20 active:scale-95"
+                        >
+                            <Download size={16} />
+                            Export PDF
+                        </button>
+                        <button 
                             onClick={fetchBookings}
-                            className="flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 rounded-2xl text-slate-600 font-bold text-sm hover:bg-slate-50 hover:text-primary-dark transition-all shadow-sm"
+                            className="flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 rounded-2xl text-slate-600 font-bold text-sm hover:bg-slate-50 hover:text-primary-dark transition-all shadow-sm active:scale-95"
                         >
                             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
                             Refresh
