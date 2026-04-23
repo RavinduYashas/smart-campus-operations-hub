@@ -38,8 +38,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disabled for stateless JWT API
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Allow CORS preflight requests
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         // Public endpoints
                         .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/login", "/api/auth/google/callback").permitAll()
+                        // ============ ADD THIS FOR RESOURCE MODULE ============
+                        // Resource endpoints - any authenticated user can access
+                        .requestMatchers("/api/resources/**", "/api/bookings/**").authenticated()
+                        // =====================================================
                         // Authenticated endpoints
                         .requestMatchers("/api/auth/me").authenticated()
                         // Role-based endpoints
@@ -48,6 +54,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
                         .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .defaultAuthenticationEntryPointFor(
+                                new org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED),
+                                new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/**")
+                        )
                 )
                 .addFilterBefore(customOAuth2RedirectFilter, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
@@ -68,7 +80,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

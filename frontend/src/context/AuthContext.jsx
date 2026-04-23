@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (token) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/auth/me', {
+            const response = await axios.get('http://localhost:8081/api/auth/me', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUser(response.data);
@@ -45,10 +45,25 @@ export const AuthProvider = ({ children }) => {
         } else {
             setLoading(false);
         }
+
+        // Set up Axios interceptor for handling 401 errors globally
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    logout();
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, token: localStorage.getItem('token') }}>
             {children}
         </AuthContext.Provider>
     );
