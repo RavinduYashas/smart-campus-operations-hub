@@ -333,7 +333,7 @@ const BookingManagement = ({ embedded = false }) => {
 
                 {/* Booking Form Modal */}
                 {showModal && (
-                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 animate-in fade-in">
                         <div className="bg-slate-900 border border-slate-700 rounded-[2rem] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative">
                             <div className="sticky top-0 bg-slate-900/90 backdrop-blur-md flex justify-between items-center p-6 border-b border-slate-800 z-10">
                                 <div>
@@ -460,7 +460,7 @@ const BookingManagement = ({ embedded = false }) => {
 
                 {/* QR Code Modal */}
                 {showQRModal && selectedQRBooking && (
-                    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-in zoom-in-95 duration-300">
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[110] p-4 animate-in zoom-in-95 duration-300">
                         <div className="bg-slate-900 border border-slate-700 rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl relative flex flex-col items-center text-center overflow-hidden">
                             {/* Decorative Background */}
                             <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-accent-gold/10 to-transparent pointer-events-none"></div>
