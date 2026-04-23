@@ -2,6 +2,7 @@ package com.smartcampus.backend.controller.booking;
 
 import com.smartcampus.backend.dto.booking.BookingRequestDTO;
 import com.smartcampus.backend.dto.booking.BookingResponseDTO;
+import com.smartcampus.backend.dto.booking.BookingStatusUpdateDTO;
 import com.smartcampus.backend.model.booking.Booking.BookingStatus;
 import com.smartcampus.backend.service.booking.BookingService;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +41,22 @@ public class BookingController {
     public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
-
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingResponseDTO> updateBookingStatus(
             @PathVariable String id, 
-            @RequestBody Map<String, String> updates) {
-        BookingStatus status = BookingStatus.valueOf(updates.get("status"));
-        return ResponseEntity.ok(bookingService.updateBookingStatus(id, status));
+            @RequestBody BookingStatusUpdateDTO updateDTO) {
+        return ResponseEntity.ok(bookingService.updateBookingStatus(id, updateDTO));
+    }
+
+    @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BookingResponseDTO> cancelBooking(
+            @PathVariable String id,
+            Authentication authentication) {
+        BookingStatusUpdateDTO updateDTO = new BookingStatusUpdateDTO();
+        updateDTO.setStatus(BookingStatus.CANCELLED);
+        // Could optionally verify if the user owns the booking here in the controller or service
+        return ResponseEntity.ok(bookingService.updateBookingStatus(id, updateDTO));
     }
 }

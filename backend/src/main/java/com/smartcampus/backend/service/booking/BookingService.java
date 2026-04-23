@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.smartcampus.backend.dto.booking.BookingStatusUpdateDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,18 @@ public class BookingService {
     private final ResourceRepository resourceRepository;
 
     public BookingResponseDTO createBooking(BookingRequestDTO requestDTO, String userEmail) {
+        // Check for scheduling conflicts
+        List<BookingStatus> activeStatuses = Arrays.asList(BookingStatus.PENDING, BookingStatus.APPROVED);
+        List<Booking> existingBookings = bookingRepository.findByResourceIdAndDateAndStatusIn(
+                requestDTO.getResourceId(), requestDTO.getDate(), activeStatuses);
+                
+        for (Booking existing : existingBookings) {
+            if (requestDTO.getStartTime().isBefore(existing.getEndTime()) && 
+                requestDTO.getEndTime().isAfter(existing.getStartTime())) {
+                throw new RuntimeException("Scheduling conflict: Resource is already booked during this time range.");
+            }
+        }
+
         Booking booking = new Booking();
         booking.setResourceId(requestDTO.getResourceId());
         booking.setUserEmail(userEmail);
@@ -50,11 +64,14 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public BookingResponseDTO updateBookingStatus(String id, BookingStatus status) {
+    public BookingResponseDTO updateBookingStatus(String id, BookingStatusUpdateDTO updateDTO) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         
-        booking.setStatus(status);
+        booking.setStatus(updateDTO.getStatus());
+        if (updateDTO.getAdminReason() != null) {
+            booking.setAdminReason(updateDTO.getAdminReason());
+        }
         booking.setUpdatedAt(LocalDateTime.now());
         
         return mapToDTO(bookingRepository.save(booking));
@@ -70,6 +87,7 @@ public class BookingService {
         dto.setEndTime(booking.getEndTime());
         dto.setPurpose(booking.getPurpose());
         dto.setAttendees(booking.getAttendees());
+        dto.setAdminReason(booking.getAdminReason());
         dto.setStatus(booking.getStatus());
         dto.setCreatedAt(booking.getCreatedAt());
 

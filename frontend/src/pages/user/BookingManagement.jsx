@@ -63,7 +63,21 @@ const BookingManagement = ({ embedded = false }) => {
             fetchBookings();
         } catch (error) {
             console.error('Error creating booking:', error);
-            alert('Failed to create booking. Please try again.');
+            const msg = error.response?.data?.message || error.response?.data || 'Failed to create booking. Please try again.';
+            alert(typeof msg === 'string' ? msg : 'Scheduling conflict or server error occurred.');
+        }
+    };
+
+    const handleCancelBooking = async (bookingId) => {
+        if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+        try {
+            await axios.post(`http://localhost:8081/api/bookings/${bookingId}/cancel`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchBookings();
+        } catch (error) {
+            console.error('Error cancelling booking:', error);
+            alert('Failed to cancel booking.');
         }
     };
 
@@ -148,7 +162,7 @@ const BookingManagement = ({ embedded = false }) => {
                             <div className="space-y-4">
                                 {bookings.map((booking) => (
                                     <div key={booking.id} className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
-                                        <div>
+                                        <div className="flex-1">
                                             <h3 className="font-semibold text-lg text-primary-dark flex items-center gap-2">
                                                 <Building2 className="w-5 h-5 text-accent-gold" />
                                                 {booking.resourceName || 'Unknown Facility'}
@@ -159,11 +173,25 @@ const BookingManagement = ({ embedded = false }) => {
                                                 <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {booking.attendees} attendees</span>
                                             </div>
                                             <p className="text-sm text-slate-600 mt-2 font-medium">Purpose: {booking.purpose}</p>
+                                            
+                                            {booking.adminReason && (
+                                                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-600">
+                                                    <strong>Admin Note:</strong> {booking.adminReason}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center">
-                                            <span className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest ${getStatusStyle(booking.status)}`}>
+                                        <div className="flex flex-col items-end gap-3 min-w-[120px]">
+                                            <span className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-center w-full ${getStatusStyle(booking.status)}`}>
                                                 {booking.status}
                                             </span>
+                                            {(booking.status === 'PENDING' || booking.status === 'APPROVED') && (
+                                                <button 
+                                                    onClick={() => handleCancelBooking(booking.id)}
+                                                    className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-rose-500 bg-rose-50 hover:bg-rose-500 hover:text-white rounded-xl transition-all w-full border border-rose-100"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
