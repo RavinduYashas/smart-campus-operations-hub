@@ -108,34 +108,68 @@ const BookingManagement = ({ embedded = false }) => {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-dark"></div>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    {bookings.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-2xl border border-slate-200">
-                            <p className="text-slate-500">You have no bookings yet.</p>
-                        </div>
-                    ) : (
-                        bookings.map((booking) => (
-                            <div key={booking.id} className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
-                                <div>
-                                    <h3 className="font-semibold text-lg text-primary-dark flex items-center gap-2">
-                                        <Building2 className="w-5 h-5 text-accent-gold" />
-                                        {booking.resourceName || 'Unknown Facility'}
-                                    </h3>
-                                    <div className="flex flex-wrap gap-4 mt-2 text-sm text-slate-500">
-                                        <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {booking.date}</span>
-                                        <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {booking.startTime} - {booking.endTime}</span>
-                                        <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {booking.attendees} attendees</span>
+                <div className="space-y-12">
+                    {/* Available Facilities Section */}
+                    <div>
+                        <h3 className="text-xl font-semibold mb-4 text-primary-dark">Available Facilities</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {facilities.map((facility) => (
+                                <div key={facility.id} className="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-all group">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="bg-slate-50 p-3 rounded-xl group-hover:bg-accent-gold/10 transition-colors">
+                                            <Building2 className="w-6 h-6 text-primary-dark" />
+                                        </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full">Available</span>
                                     </div>
-                                    <p className="text-sm text-slate-600 mt-2 font-medium">Purpose: {booking.purpose}</p>
+                                    <h4 className="font-bold text-lg text-primary-dark mb-1">{facility.name}</h4>
+                                    <p className="text-sm text-slate-500 mb-4 line-clamp-2">{facility.description || `${facility.type} - Capacity: ${facility.capacity}`}</p>
+                                    <button 
+                                        onClick={() => {
+                                            setFormData({ ...formData, resourceId: facility.id });
+                                            setShowModal(true);
+                                        }}
+                                        className="w-full py-2 bg-slate-100 hover:bg-primary-dark hover:text-white text-slate-700 font-semibold rounded-xl text-sm transition-all"
+                                    >
+                                        Book {facility.type === 'EQUIPMENT' ? 'Equipment' : 'Facility'}
+                                    </button>
                                 </div>
-                                <div className="flex items-center">
-                                    <span className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest ${getStatusStyle(booking.status)}`}>
-                                        {booking.status}
-                                    </span>
-                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* My Bookings Section */}
+                    <div>
+                        <h3 className="text-xl font-semibold mb-4 text-primary-dark">My Booking History</h3>
+                        {bookings.length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                                <p className="text-slate-500">You have no bookings yet.</p>
                             </div>
-                        ))
-                    )}
+                        ) : (
+                            <div className="space-y-4">
+                                {bookings.map((booking) => (
+                                    <div key={booking.id} className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
+                                        <div>
+                                            <h3 className="font-semibold text-lg text-primary-dark flex items-center gap-2">
+                                                <Building2 className="w-5 h-5 text-accent-gold" />
+                                                {booking.resourceName || 'Unknown Facility'}
+                                            </h3>
+                                            <div className="flex flex-wrap gap-4 mt-2 text-sm text-slate-500">
+                                                <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {booking.date}</span>
+                                                <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {booking.startTime} - {booking.endTime}</span>
+                                                <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {booking.attendees} attendees</span>
+                                            </div>
+                                            <p className="text-sm text-slate-600 mt-2 font-medium">Purpose: {booking.purpose}</p>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <span className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest ${getStatusStyle(booking.status)}`}>
+                                                {booking.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 

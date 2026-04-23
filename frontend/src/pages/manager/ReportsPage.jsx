@@ -121,7 +121,7 @@ const ReportsPage = () => {
             </div>
 
             {/* Facility Operations & Bookings Segment */}
-            <div className="mt-12 bg-white rounded-[3rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.03)] p-10 overflow-hidden relative group">
+            <div id="booking-section" className="mt-12 bg-white rounded-[3rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.03)] p-10 overflow-hidden relative group">
                 <BookingManagement embedded={true} />
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/5 to-transparent pointer-events-none"></div>
             </div>

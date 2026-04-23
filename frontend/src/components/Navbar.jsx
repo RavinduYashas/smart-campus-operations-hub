@@ -48,6 +48,7 @@ const Navbar = () => {
 
         // MANAGER role
         { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER'] },
+        { path: '/reports#booking-section', label: 'Book Facility', icon: <Calendar size={15} />, roles: ['MANAGER'] },
     ];
 
     const filteredItems = user ? navItems.filter(item => item.roles.includes(user.role)) : [];
@@ -103,8 +104,8 @@ const Navbar = () => {
                     <div className="flex items-center gap-3">
                         {user ? (
                             <div className="hidden sm:flex items-center gap-5">
-                                {user.role === 'USER' && (
-                                    <Link to="/my-bookings" className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95">
+                                {(user.role === 'USER' || user.role === 'MANAGER') && (
+                                    <Link to={user.role === 'MANAGER' ? '/reports' : '/my-bookings'} className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95">
                                         <Calendar size={16} /> Book Facility
                                     </Link>
                                 )}
