@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -10,18 +11,18 @@ import AdminPanel from './pages/admin/AdminPanel';
 import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
-import BookingVerification from './pages/BookingVerification';
-import ManualValidation from './pages/admin/ManualValidation';
+import AssetsCatalogue from './pages/user/AssetsCatalogue';
 import BookingManagement from './pages/user/BookingManagement';
 import IncidentTicketing from './pages/user/IncidentTicketing';
 import NotificationHub from './pages/NotificationHub';
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
+import AssetManagement from './pages/admin/AssetManagement';
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 import TechnicianQueue from './pages/technician/TechnicianQueue';
+import IncidentTickets from './pages/IncidentTickets';
+import Attachments from './pages/Attachments';
+import TechnicianUpdates from './pages/TechnicianUpdates';
 
-// Using the new resource module implementations
-import AssetsCatalogue from './pages/resource/AssetsCatalogue';
-import AssetManagement from './pages/resource/AssetsManagement';
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -75,9 +76,12 @@ const TokenHandler = () => {
     return <Login />;
 };
 
+
+
 function App() {
     return (
         <AuthProvider>
+            <Toaster position="top-right" reverseOrder={false} />
             <Router>
                 <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
                     <Navbar />
@@ -88,14 +92,18 @@ function App() {
 
                             {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
-                            
-                            {/* Public Verification Route */}
-                            <Route path="/verify-booking/:id" element={<BookingVerification />} />
 
-                            {/* Generic Protected Dashboard */}
+                            {/* Generic Protected Dashboard and New Shared Routes */}
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
                                 <Route path="/notifications" element={<NotificationHub />} />
+                                <Route path="/attachments" element={<Attachments />} />
+                                <Route path="/technician-updates" element={<TechnicianUpdates />} />
+                            </Route>
+
+                            {/* Incident Tickets restricted from Technicians */}
+                            <Route element={<ProtectedRoute allowedRoles={['USER', 'MANAGER']} />}>
+                                <Route path="/incident-tickets" element={<IncidentTickets />} />
                             </Route>
 
                             {/* User Specific Routes */}
@@ -122,10 +130,6 @@ function App() {
                                 <Route path="/reports" element={<ReportsPage />} />
                             </Route>
 
-                            {/* Shared Admin/Manager Routes */}
-                            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
-                                <Route path="/admin/validate" element={<ManualValidation />} />
-                            </Route>
                         </Routes>
                     </main>
                 </div>

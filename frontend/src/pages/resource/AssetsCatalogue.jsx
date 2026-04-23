@@ -48,7 +48,7 @@ const AssetsCatalogue = () => {
             if (filters.location) params.append('location', filters.location);
             if (filters.status) params.append('status', filters.status);
             
-            const response = await axios.get(`http://localhost:8081/api/resources/search?${params}`, {
+            const response = await axios.get(`http://localhost:8080/api/resources/search?${params}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setResources(response.data);
