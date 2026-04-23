@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, X, Calendar, Clock, Users, Building2, QrCode, Download } from 'lucide-react';
+import { Plus, X, Calendar, Clock, Users, Building2, QrCode, Download, AlertCircle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 const BookingManagement = ({ embedded = false }) => {
@@ -10,6 +10,7 @@ const BookingManagement = ({ embedded = false }) => {
     const [facilities, setFacilities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [formError, setFormError] = useState('');
     const [showQRModal, setShowQRModal] = useState(false);
     const [selectedQRBooking, setSelectedQRBooking] = useState(null);
     const [formData, setFormData] = useState({
@@ -55,6 +56,24 @@ const BookingManagement = ({ embedded = false }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormError('');
+
+        // Custom Validation
+        if (!formData.resourceId || !formData.date || !formData.startTime || !formData.endTime || !formData.attendees || !formData.purpose) {
+            setFormError('All fields are required.');
+            return;
+        }
+
+        if (formData.startTime >= formData.endTime) {
+            setFormError('End time must be strictly after the start time.');
+            return;
+        }
+
+        if (parseInt(formData.attendees) <= 0) {
+            setFormError('Attendees must be at least 1.');
+            return;
+        }
+
         try {
             await axios.post('http://localhost:8081/api/bookings', formData, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -237,6 +256,7 @@ const BookingManagement = ({ embedded = false }) => {
                                     <button 
                                         onClick={() => {
                                             setFormData({ ...formData, resourceId: facility.id });
+                                            setFormError('');
                                             setShowModal(true);
                                         }}
                                         className="w-full py-2 bg-slate-100 hover:bg-primary-dark hover:text-white text-slate-700 font-semibold rounded-xl text-sm transition-all"
@@ -326,12 +346,25 @@ const BookingManagement = ({ embedded = false }) => {
                     <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center p-4 border-b border-slate-100">
                             <h2 className="text-lg font-bold text-primary-dark">Book a Facility</h2>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-primary-dark">
+                            <button 
+                                onClick={() => {
+                                    setShowModal(false);
+                                    setFormError('');
+                                }} 
+                                className="text-slate-400 hover:text-primary-dark"
+                            >
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
                         
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            {formError && (
+                                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-sm font-semibold rounded-lg flex items-center gap-2">
+                                    <AlertCircle size={16} className="shrink-0" />
+                                    {formError}
+                                </div>
+                            )}
+
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Select Facility *</label>
                                 <select
