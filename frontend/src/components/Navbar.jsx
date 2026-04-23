@@ -103,6 +103,11 @@ const Navbar = () => {
                     <div className="flex items-center gap-3">
                         {user ? (
                             <div className="hidden sm:flex items-center gap-5">
+                                {user.role === 'USER' && (
+                                    <Link to="/my-bookings" className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95">
+                                        <Calendar size={16} /> Book Facility
+                                    </Link>
+                                )}
                                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 group transition-all hover:bg-white/10 hover:shadow-md">
                                     <div className="flex flex-col items-end leading-none">
                                         <span className="text-[11px] font-bold uppercase text-accent-gold mb-1">{user.role}</span>

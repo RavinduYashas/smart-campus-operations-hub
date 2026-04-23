@@ -45,7 +45,7 @@ public class SecurityConfig {
                         
                         // ============ ADD THIS FOR RESOURCE MODULE ============
                         // Resource endpoints - any authenticated user can access
-                        .requestMatchers("/api/resources/**").authenticated()
+                        .requestMatchers("/api/resources/**", "/api/bookings/**").authenticated()
                         // =====================================================
                         
                         // Authenticated endpoints
@@ -58,6 +58,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/**").authenticated()
                         
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .defaultAuthenticationEntryPointFor(
+                                new org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED),
+                                new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/**")
+                        )
                 )
                 .addFilterBefore(customOAuth2RedirectFilter, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
