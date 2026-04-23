@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, X, Calendar, Clock, Users, Building2, QrCode } from 'lucide-react';
+import { Plus, X, Calendar, Clock, Users, Building2, QrCode, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 const BookingManagement = ({ embedded = false }) => {
@@ -84,6 +84,100 @@ const BookingManagement = ({ embedded = false }) => {
         }
     };
 
+    const exportToPDF = () => {
+        import('jspdf').then(({ default: jsPDF }) => {
+            import('jspdf-autotable').then(({ default: autoTable }) => {
+                const doc = new jsPDF();
+                
+                // Colors and styling matching the corporate dark/gold theme
+                const primaryDark = [15, 23, 42]; // slate-900
+                const accentGold = [245, 158, 11]; // amber-500
+                
+                // Header
+                doc.setFillColor(...primaryDark);
+                doc.rect(0, 0, 210, 40, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.setFont("helvetica", "bold");
+                doc.text("SMART CAMPUS", 14, 25);
+                
+                doc.setTextColor(...accentGold);
+                doc.setFontSize(10);
+                doc.text("PERSONAL BOOKING HISTORY", 14, 32);
+                
+                // User Details / Meta
+                doc.setTextColor(100, 100, 100);
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                const today = new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', month: 'long', day: 'numeric' 
+                });
+                doc.text(`Generated: ${today}`, 14, 50);
+                doc.text(`Total Bookings: ${bookings.length}`, 14, 56);
+                
+                // Table Data
+                const tableColumn = ["Ref ID", "Facility", "Date", "Time", "Attendees", "Status"];
+                const tableRows = bookings.map(booking => [
+                    booking.id.substring(0,8).toUpperCase(),
+                    booking.resourceName || 'Unknown',
+                    booking.date,
+                    `${booking.startTime} - ${booking.endTime}`,
+                    booking.attendees,
+                    booking.status
+                ]);
+                
+                autoTable(doc, {
+                    startY: 65,
+                    head: [tableColumn],
+                    body: tableRows,
+                    theme: 'grid',
+                    styles: { 
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 4,
+                        lineColor: [226, 232, 240], // slate-200
+                        lineWidth: 0.1,
+                    },
+                    headStyles: {
+                        fillColor: primaryDark,
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { fontStyle: 'bold', textColor: accentGold, halign: 'center' }, // Ref ID
+                        1: { fontStyle: 'bold' }, // Facility
+                        2: { halign: 'center' }, // Date
+                        3: { halign: 'center' }, // Time
+                        4: { halign: 'center' }, // Attendees
+                        5: { fontStyle: 'bold', halign: 'center' } // Status
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 250, 252] // slate-50
+                    },
+                    didDrawPage: function (data) {
+                        // Footer
+                        doc.setFontSize(8);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text(
+                            `Page ${doc.internal.getNumberOfPages()}`, 
+                            data.settings.margin.left, 
+                            doc.internal.pageSize.height - 10
+                        );
+                        doc.text(
+                            "Smart Campus Operations Hub - Confidential", 
+                            doc.internal.pageSize.width - data.settings.margin.right - 60, 
+                            doc.internal.pageSize.height - 10
+                        );
+                    }
+                });
+                
+                doc.save("My_Booking_History.pdf");
+            });
+        });
+    };
+
     const getStatusStyle = (status) => {
         switch (status) {
             case 'APPROVED': return 'bg-emerald-100 text-emerald-700';
@@ -156,7 +250,18 @@ const BookingManagement = ({ embedded = false }) => {
 
                     {/* My Bookings Section */}
                     <div>
-                        <h3 className="text-xl font-semibold mb-4 text-primary-dark">My Booking History</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold text-primary-dark">My Booking History</h3>
+                            {bookings.length > 0 && (
+                                <button 
+                                    onClick={exportToPDF}
+                                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition-colors"
+                                >
+                                    <Download size={16} />
+                                    Download Report
+                                </button>
+                            )}
+                        </div>
                         {bookings.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm">
                                 <p className="text-slate-500">You have no bookings yet.</p>
