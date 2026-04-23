@@ -109,7 +109,6 @@ function App() {
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
-                                <Route path="/admin/validate" element={<ManualValidation />} />
                                 <Route path="/admin/assets" element={<AssetManagement />} />
                                 <Route path="/admin/tickets" element={<GlobalTicketView />} />
                             </Route>
@@ -121,6 +120,10 @@ function App() {
 
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
+                            </Route>
+
+                            {/* Shared Admin/Manager Routes */}
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
                                 <Route path="/admin/validate" element={<ManualValidation />} />
                             </Route>
                         </Routes>
