@@ -120,10 +120,45 @@ const ReportsPage = () => {
                 </div>
             </div>
 
-            {/* Facility Operations & Bookings Segment */}
-            <div id="booking-section" className="mt-12 bg-white rounded-[3rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.03)] p-10 overflow-hidden relative group">
-                <BookingManagement embedded={true} />
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/5 to-transparent pointer-events-none"></div>
+            {/* Executive Facility Operations Segment */}
+            <div id="booking-section" className="mt-20 pt-16 border-t border-slate-200/60 relative">
+                {/* Ambient Background Glows */}
+                <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+                
+                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+                    <div>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 rounded-full border border-amber-100 mb-6">
+                            <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span className="text-[10px] font-bold text-amber-700 uppercase tracking-[0.2em]">Active Operations Module</span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                            Facility Logistics Hub
+                        </h2>
+                        <p className="text-slate-500 mt-4 font-medium max-w-2xl leading-relaxed">
+                            Coordinate corporate spaces, manage real-time resource utilization, and oversee executive physical access passes from the centralized terminal below.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Professional Outer Shell for the Component */}
+                <div className="bg-slate-900 rounded-[2.5rem] md:rounded-[3.5rem] p-1.5 shadow-[0_32px_64px_-16px_rgba(15,23,42,0.15)] overflow-hidden relative group transition-transform duration-700 hover:shadow-[0_32px_64px_-16px_rgba(15,23,42,0.25)]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black pointer-events-none"></div>
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"></div>
+                    
+                    {/* Inner Content Area */}
+                    <div className="bg-white rounded-[2.35rem] md:rounded-[3.35rem] overflow-hidden relative z-10">
+                        {/* Soft inner depth shadow */}
+                        <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-slate-100/80 to-transparent pointer-events-none z-20"></div>
+                        
+                        <div className="p-4 sm:p-8 lg:p-12">
+                            <BookingManagement embedded={true} />
+                        </div>
+                        
+                        {/* Bottom decorative edge */}
+                        <div className="h-2 w-full bg-slate-50 border-t border-slate-100 mt-4"></div>
+                    </div>
+                </div>
             </div>
         </div>
     );
