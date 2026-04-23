@@ -41,6 +41,9 @@ public class SecurityConfig {
                         // Allow CORS preflight requests
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         // Public endpoints
+                        
+                        // Admin-specific
+                        .requestMatchers("/api/auth/register").hasRole("ADMIN")
                         .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/login", "/api/auth/google/callback", "/api/bookings/*/verify").permitAll()
                         // ============ ADD THIS FOR RESOURCE MODULE ============
                         // Resource endpoints - any authenticated user can access
@@ -50,9 +53,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/me").authenticated()
                         // Role-based endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Technician-specific
                         .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
+                        // Manager-specific
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                        // General Authenticated
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/api/tickets/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
