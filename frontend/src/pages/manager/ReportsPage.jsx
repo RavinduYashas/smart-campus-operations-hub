@@ -147,16 +147,16 @@ const ReportsPage = () => {
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"></div>
                     
                     {/* Inner Content Area */}
-                    <div className="bg-white rounded-[2.35rem] md:rounded-[3.35rem] overflow-hidden relative z-10">
+                    <div className="bg-slate-900/50 rounded-[2.35rem] md:rounded-[3.35rem] overflow-hidden relative z-10 border border-slate-700/50">
                         {/* Soft inner depth shadow */}
-                        <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-slate-100/80 to-transparent pointer-events-none z-20"></div>
+                        <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-black/20 to-transparent pointer-events-none z-20"></div>
                         
                         <div className="p-4 sm:p-8 lg:p-12">
                             <BookingManagement embedded={true} />
                         </div>
                         
                         {/* Bottom decorative edge */}
-                        <div className="h-2 w-full bg-slate-50 border-t border-slate-100 mt-4"></div>
+                        <div className="h-2 w-full bg-slate-800/50 border-t border-slate-700 mt-4"></div>
                     </div>
                 </div>
             </div>
