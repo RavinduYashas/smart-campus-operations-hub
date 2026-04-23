@@ -15,7 +15,8 @@ import {
     Bell,
     Calendar,
     AlertCircle,
-    CheckCircle2
+    CheckCircle2,
+    ShieldCheck
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -39,6 +40,7 @@ const Navbar = () => {
         { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
         { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/validate', label: 'Validate Pass', icon: <ShieldCheck size={15} />, roles: ['ADMIN', 'MANAGER'] },
         { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['ADMIN'] },
 
@@ -48,6 +50,7 @@ const Navbar = () => {
 
         // MANAGER role
         { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER'] },
+        { path: '/reports#booking-section', label: 'Book Facility', icon: <Calendar size={15} />, roles: ['MANAGER'] },
     ];
 
     const filteredItems = user ? navItems.filter(item => item.roles.includes(user.role)) : [];
@@ -87,6 +90,16 @@ const Navbar = () => {
                                 <Link
                                     key={item.path}
                                     to={item.path}
+                                    onClick={(e) => {
+                                        if (item.path.includes('#') && location.pathname === item.path.split('#')[0]) {
+                                            const hash = item.path.split('#')[1];
+                                            const el = document.getElementById(hash);
+                                            if (el) {
+                                                e.preventDefault();
+                                                el.scrollIntoView({ behavior: 'smooth' });
+                                            }
+                                        }
+                                    }}
                                     className={`flex items-center px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 gap-2 ${isActive(item.path)
                                             ? 'bg-accent-gold/10 text-accent-gold shadow-sm border border-accent-gold/20'
                                             : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -103,6 +116,23 @@ const Navbar = () => {
                     <div className="flex items-center gap-3">
                         {user ? (
                             <div className="hidden sm:flex items-center gap-5">
+                                {(user.role === 'USER' || user.role === 'MANAGER') && (
+                                    <Link 
+                                        to={user.role === 'MANAGER' ? '/reports#booking-section' : '/my-bookings'} 
+                                        onClick={(e) => {
+                                            if (user.role === 'MANAGER' && location.pathname === '/reports') {
+                                                const el = document.getElementById('booking-section');
+                                                if (el) {
+                                                    e.preventDefault();
+                                                    el.scrollIntoView({ behavior: 'smooth' });
+                                                }
+                                            }
+                                        }}
+                                        className="px-4 py-2 bg-accent-gold text-primary-dark font-bold rounded-xl text-sm shadow-lg shadow-amber-900/20 hover:-translate-y-0.5 hover:bg-amber-400 transition-all flex items-center gap-2 active:scale-95"
+                                    >
+                                        <Calendar size={16} /> Book Facility
+                                    </Link>
+                                )}
                                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 group transition-all hover:bg-white/10 hover:shadow-md">
                                     <div className="flex flex-col items-end leading-none">
                                         <span className="text-[11px] font-bold uppercase text-accent-gold mb-1">{user.role}</span>

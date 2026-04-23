@@ -36,7 +36,7 @@ const Login = () => {
         const top = window.screen.height / 2 - height / 2;
         
         window.open(
-            'http://localhost:8080/oauth2/authorization/google',
+            'http://localhost:8081/oauth2/authorization/google',
             'Google Sign In',
             `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,status=0,menubar=0`
         );
@@ -48,7 +48,7 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post('http://localhost:8081/api/auth/login', {
                 email,
                 password
             });

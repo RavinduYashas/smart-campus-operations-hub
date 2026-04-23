@@ -10,17 +10,18 @@ import AdminPanel from './pages/admin/AdminPanel';
 import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
-import AssetsCatalogue from './pages/user/AssetsCatalogue';
+import BookingVerification from './pages/BookingVerification';
+import ManualValidation from './pages/admin/ManualValidation';
 import BookingManagement from './pages/user/BookingManagement';
 import IncidentTicketing from './pages/user/IncidentTicketing';
 import NotificationHub from './pages/NotificationHub';
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
-import AssetManagement from './pages/admin/AssetManagement';
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 import TechnicianQueue from './pages/technician/TechnicianQueue';
-import AssetsCatalogue from './pages/resource/AssetsCatalogue';
-import AssetManagement from './pages/resource/AssetManagement';
 
+// Using the new resource module implementations
+import AssetsCatalogue from './pages/resource/AssetsCatalogue';
+import AssetManagement from './pages/resource/AssetsManagement';
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -87,6 +88,9 @@ function App() {
 
                             {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
+                            
+                            {/* Public Verification Route */}
+                            <Route path="/verify-booking/:id" element={<BookingVerification />} />
 
                             {/* Generic Protected Dashboard */}
                             <Route element={<ProtectedRoute />}>
@@ -118,12 +122,9 @@ function App() {
                                 <Route path="/reports" element={<ReportsPage />} />
                             </Route>
 
-                            <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
-                                <Route path="/assets" element={<AssetsCatalogue />} />
-                            </Route>
-
-                            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-                                <Route path="/admin/assets" element={<AssetManagement />} />
+                            {/* Shared Admin/Manager Routes */}
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
+                                <Route path="/admin/validate" element={<ManualValidation />} />
                             </Route>
                         </Routes>
                     </main>
