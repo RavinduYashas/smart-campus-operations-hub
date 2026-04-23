@@ -40,13 +40,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/login", "/api/auth/google/callback").permitAll()
-                        // Authenticated endpoints
-                        .requestMatchers("/api/auth/me").authenticated()
-                        // Role-based endpoints
+                        // Admin-specific
+                        .requestMatchers("/api/auth/register").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Technician-specific
                         .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
+                        // Manager-specific
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                        // General Authenticated
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/api/tickets/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(customOAuth2RedirectFilter, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter.class)
