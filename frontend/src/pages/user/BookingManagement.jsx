@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { Plus, X, Calendar, Clock, Users, Building2 } from 'lucide-react';
 
-const BookingManagement = () => {
+const BookingManagement = ({ embedded = false }) => {
     const { token } = useAuth();
     const [bookings, setBookings] = useState([]);
     const [facilities, setFacilities] = useState([]);
@@ -77,11 +77,22 @@ const BookingManagement = () => {
     };
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
-            <div className="flex justify-between items-end mb-8">
+        <div className={embedded ? "w-full" : "p-8 max-w-6xl mx-auto"}>
+            <div className={`flex justify-between items-end ${embedded ? 'mb-6' : 'mb-8'}`}>
                 <div>
-                    <h1 className="text-3xl font-semibold mb-2 text-primary-dark">My Bookings</h1>
-                    <p className="text-gray-600">Track and manage your facility and equipment reservations.</p>
+                    {embedded ? (
+                        <>
+                            <h2 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3 mb-2">
+                                <Building2 className="text-amber-500" /> Facility Operations & Bookings
+                            </h2>
+                            <p className="text-slate-500 font-medium">Manage executive reservations and facility access.</p>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="text-3xl font-semibold mb-2 text-primary-dark">My Bookings</h1>
+                            <p className="text-gray-600">Track and manage your facility and equipment reservations.</p>
+                        </>
+                    )}
                 </div>
                 <button
                     onClick={() => setShowModal(true)}
