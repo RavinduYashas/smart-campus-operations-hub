@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (token, userData = null) => {
         localStorage.setItem('token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         if (userData) {
             setUser(userData);
             setLoading(false);
@@ -26,12 +27,12 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (token) => {
         try {
-            const response = await axios.get('http://localhost:8081/api/auth/me', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            const response = await axios.get('/api/auth/me');
             setUser(response.data);
         } catch (error) {
             console.error('Failed to fetch user:', error);
+            delete axios.defaults.headers.common['Authorization'];
             logout();
         } finally {
             setLoading(false);
@@ -45,25 +46,10 @@ export const AuthProvider = ({ children }) => {
         } else {
             setLoading(false);
         }
-
-        // Set up Axios interceptor for handling 401 errors globally
-        const interceptor = axios.interceptors.response.use(
-            (response) => response,
-            (error) => {
-                if (error.response && error.response.status === 401) {
-                    logout();
-                }
-                return Promise.reject(error);
-            }
-        );
-
-        return () => {
-            axios.interceptors.response.eject(interceptor);
-        };
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, token: localStorage.getItem('token') }}>
+        <AuthContext.Provider value={{ user, loading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

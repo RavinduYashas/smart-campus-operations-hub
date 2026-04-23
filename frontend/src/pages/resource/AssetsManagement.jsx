@@ -58,7 +58,7 @@ const AssetManagement = () => {
     const fetchResources = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8081/api/resources', {
+            const response = await axios.get('http://localhost:8080/api/resources', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setResources(response.data);
@@ -96,13 +96,11 @@ const AssetManagement = () => {
         e.preventDefault();
         try {
             if (editingResource) {
-                await axios.put(`http://localhost:8081/api/resources/${editingResource.id}`, formData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                await axios.put(`http://localhost:8080/api/resources/${editingResource.id}`, formData, {
+                    headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:8081/api/resources', formData, {
+                await axios.post('http://localhost:8080/api/resources', formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }
@@ -117,7 +115,7 @@ const AssetManagement = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:8081/api/resources/${id}`, {
+            await axios.delete(`http://localhost:8080/api/resources/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchResources();
@@ -131,7 +129,7 @@ const AssetManagement = () => {
     const handleBulkDelete = async () => {
         if (bulkSelect.length === 0) return;
         try {
-            await axios.delete('http://localhost:8081/api/resources/bulk', {
+            await axios.delete('http://localhost:8080/api/resources/bulk', {
                 headers: { Authorization: `Bearer ${token}` },
                 data: { ids: bulkSelect }
             });
@@ -146,7 +144,7 @@ const AssetManagement = () => {
     const handleStatusToggle = async (id, currentStatus) => {
         const newStatus = currentStatus === 'ACTIVE' ? 'OUT_OF_SERVICE' : 'ACTIVE';
         try {
-            await axios.patch(`http://localhost:8081/api/resources/${id}/status?status=${newStatus}`, {}, {
+            await axios.patch(`http://localhost:8080/api/resources/${id}/status?status=${newStatus}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchResources();
@@ -159,7 +157,7 @@ const AssetManagement = () => {
     const handleBulkStatusUpdate = async (status) => {
         if (bulkSelect.length === 0) return;
         try {
-            await axios.patch('http://localhost:8081/api/resources/bulk/status', 
+            await axios.patch('http://localhost:8080/api/resources/bulk/status', 
                 { ids: bulkSelect, status: status },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
