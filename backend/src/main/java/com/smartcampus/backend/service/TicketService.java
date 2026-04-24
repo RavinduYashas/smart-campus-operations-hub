@@ -62,6 +62,7 @@ public class TicketService {
             "You have successfully reported: " + savedTicket.getTitle(), 
             savedTicket.getPriority().toUpperCase(), 
             "MAINTENANCE", 
+            savedTicket.getId(), 
             NotificationType.TICKET_STATUS);
 
         // Cross-role notifications
@@ -74,6 +75,7 @@ public class TicketService {
                     "New student incident: " + ticket.getTitle() + " at " + ticket.getLocation(), 
                     ticket.getPriority().toUpperCase(), 
                     "MAINTENANCE", 
+                    savedTicket.getId(), 
                     NotificationType.TICKET_STATUS);
                 
                 // Notify all Managers
@@ -82,6 +84,7 @@ public class TicketService {
                     "Resource incident reported: " + ticket.getTitle(), 
                     "NORMAL", 
                     "MAINTENANCE", 
+                    savedTicket.getId(), 
                     NotificationType.TICKET_STATUS);
             } else if (reporter.getRole() == User.Role.TECHNICIAN) {
                 // Notify all Students (USER role)
@@ -90,6 +93,7 @@ public class TicketService {
                     "Campus Maintenance Update: " + ticket.getTitle(), 
                     "NORMAL", 
                     "MAINTENANCE", 
+                    ticket.getId(), 
                     NotificationType.TICKET_STATUS);
             }
         } else {
@@ -99,6 +103,7 @@ public class TicketService {
                 "Guest incident reported: " + ticket.getTitle(), 
                 "NORMAL", 
                 "MAINTENANCE", 
+                savedTicket.getId(), 
                 NotificationType.TICKET_STATUS);
         }
 
@@ -150,6 +155,7 @@ public class TicketService {
                 message, 
                 ticket.getPriority().toUpperCase(), 
                 "MAINTENANCE", 
+                ticket.getId(), 
                 NotificationType.TICKET_STATUS);
         }
         
@@ -165,6 +171,7 @@ public class TicketService {
                     message, 
                     "NORMAL", 
                     "MAINTENANCE", 
+                    ticket.getId(), 
                     NotificationType.TICKET_STATUS);
             }
         }
@@ -183,6 +190,7 @@ public class TicketService {
                 message, 
                 "NORMAL", 
                 "MAINTENANCE", 
+                ticket.getId(), 
                 NotificationType.COMMENT);
         }
 

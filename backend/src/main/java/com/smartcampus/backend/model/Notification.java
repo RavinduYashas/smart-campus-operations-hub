@@ -20,6 +20,7 @@ public class Notification {
     private String title;
     private String priority; // e.g., "URGENT", "NORMAL", "LOW"
     private String category; // e.g., "MAINTENANCE", "BOOKING", "SECURITY"
+    private String relatedId; // e.g., ticketId or bookingId
     private NotificationType type;
     private boolean isRead;
     private LocalDateTime createdAt;

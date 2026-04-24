@@ -55,6 +55,7 @@ public class BookingService {
             "A new booking request for " + requestDTO.getPurpose() + " is pending approval.", 
             "NORMAL", 
             "BOOKING", 
+            savedBooking.getId(), 
             com.smartcampus.backend.model.Notification.NotificationType.TICKET_STATUS); // Using TICKET_STATUS as generic for now or I can add a new type
 
         return mapToDTO(savedBooking);
@@ -95,6 +96,7 @@ public class BookingService {
             "Your booking for '" + booking.getPurpose() + "' has been " + booking.getStatus().toString().toLowerCase() + ".", 
             priority, 
             "BOOKING", 
+            savedBooking.getId(), 
             com.smartcampus.backend.model.Notification.NotificationType.BOOKING_APPROVED); // Map appropriately
 
         return mapToDTO(savedBooking);

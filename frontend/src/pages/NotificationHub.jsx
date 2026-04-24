@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { 
     ShieldAlert, 
     Info, 
@@ -21,6 +23,8 @@ import {
 const NotificationHub = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
     const fetchAlerts = async () => {
         try {
@@ -52,6 +56,27 @@ const NotificationHub = () => {
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: !n.read } : n));
         } catch (error) {
             console.error("Error toggling read status", error);
+        }
+    };
+
+    const handleViewDetails = (notif) => {
+        const type = notif.type;
+        const category = notif.category;
+        const role = user?.role;
+
+        // Routing logic based on category and role
+        if (category === 'MAINTENANCE' || type === 'TICKET_STATUS' || type === 'COMMENT') {
+            if (role === 'TECHNICIAN') navigate('/tickets');
+            else if (role === 'ADMIN') navigate('/admin/tickets');
+            else navigate('/incident-tickets');
+        } else if (category === 'BOOKING' || type === 'BOOKING_APPROVED' || type === 'BOOKING_REJECTED') {
+            if (role === 'ADMIN') navigate('/admin/bookings');
+            else if (role === 'MANAGER') navigate('/reports'); // Managers see bookings in reports/dashboard
+            else navigate('/my-bookings');
+        } else {
+            // Default fallbacks
+            if (role === 'ADMIN') navigate('/admin');
+            else navigate('/dashboard');
         }
     };
 
@@ -189,7 +214,10 @@ const NotificationHub = () => {
                                                     </>
                                                 )}
                                             </button>
-                                            <button className="text-[11px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 transition-colors">
+                                            <button 
+                                                onClick={() => handleViewDetails(notif)}
+                                                className="text-[11px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 transition-colors"
+                                            >
                                                 View Details
                                                 <ChevronRight size={12} />
                                             </button>
