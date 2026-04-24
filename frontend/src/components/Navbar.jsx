@@ -77,6 +77,7 @@ const Navbar = () => {
 
         // TECHNICIAN role
         { path: '/technician/tasks', label: 'My Tasks', icon: <Ticket size={15} />, roles: ['TECHNICIAN'] },
+        { path: '/tickets', label: 'Service Tickets', icon: <Wrench size={15} />, roles: ['TECHNICIAN'] },
 
         // MONITORING & REPORTS
         { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER', 'ADMIN'] },
