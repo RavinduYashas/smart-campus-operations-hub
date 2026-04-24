@@ -68,6 +68,9 @@ const AdminPanel = () => {
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-3">
+                    <Link to="/admin/users" className="px-5 py-3.5 bg-white border border-slate-200 text-primary-dark hover:bg-slate-50 hover:-translate-y-1 transition-all rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center gap-2.5">
+                        <Users size={16} className="text-secondary-blue" /> Users
+                    </Link>
                     <Link to="/admin/bookings" className="px-5 py-3.5 bg-white border border-slate-200 text-primary-dark hover:bg-slate-50 hover:-translate-y-1 transition-all rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center gap-2.5">
                         <CalendarDays size={16} className="text-secondary-blue" /> Bookings
                     </Link>
