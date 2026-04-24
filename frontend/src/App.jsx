@@ -22,6 +22,7 @@ import NotificationHub from './pages/NotificationHub';              // Module D
 
 // Admin pages
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
+import AdminUsers from './pages/admin/AdminUsers';
 import AssetManagement from './pages/admin/AssetsManagement';     // Module A Admin - Your module
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 import TechnicianQueue from './pages/technician/TechnicianQueue';
@@ -118,6 +119,7 @@ function App() {
 
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
+                                <Route path="/admin/users" element={<AdminUsers />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
                                 <Route path="/admin/assets" element={<AssetManagement />} />
                                 <Route path="/admin/tickets" element={<GlobalTicketView />} />
