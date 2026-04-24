@@ -22,4 +22,14 @@ public class NotificationService {
         notification.setCreatedAt(LocalDateTime.now());
         return notificationRepository.save(notification);
     }
+
+    public Notification createRoleNotification(String targetRole, String message, Notification.NotificationType type) {
+        Notification notification = new Notification();
+        notification.setTargetRole(targetRole);
+        notification.setMessage(message);
+        notification.setType(type);
+        notification.setRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        return notificationRepository.save(notification);
+    }
 }

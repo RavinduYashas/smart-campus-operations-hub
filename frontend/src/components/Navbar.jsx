@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import {
     LayoutDashboard,
@@ -24,6 +25,27 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            if (!user) return;
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get('http://localhost:8080/api/notifications/my-alerts', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const unread = res.data.filter(n => !n.isRead).length;
+                setUnreadCount(unread);
+            } catch (error) {
+                console.error("Error fetching notification count", error);
+            }
+        };
+
+        fetchUnreadCount();
+        const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
+        return () => clearInterval(interval);
+    }, [user]);
 
     const isActive = (path) => location.pathname === path;
 
@@ -110,6 +132,14 @@ const Navbar = () => {
                     <div className="flex items-center gap-3">
                         {user ? (
                             <div className="hidden sm:flex items-center gap-5">
+                                <Link to="/notifications" className="relative p-2.5 bg-white/5 text-slate-300 border border-white/10 rounded-2xl hover:bg-white/10 hover:text-accent-gold transition-all group">
+                                    <Bell size={20} className={unreadCount > 0 ? "animate-swing" : ""} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-lg border-2 border-primary-dark">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </Link>
                                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 group transition-all hover:bg-white/10 hover:shadow-md">
                                     <div className="flex flex-col items-end leading-none">
                                         <span className="text-[11px] font-bold uppercase text-accent-gold mb-1">{user.role}</span>

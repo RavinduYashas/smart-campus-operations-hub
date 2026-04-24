@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import RoleHeaderAlert from './components/RoleHeaderAlert';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -90,6 +91,7 @@ function App() {
             <Router>
                 <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
                     <Navbar />
+                    <RoleHeaderAlert />
                     <main className="flex-grow">
                         <Routes>
                             <Route path="/login" element={<TokenHandler />} />

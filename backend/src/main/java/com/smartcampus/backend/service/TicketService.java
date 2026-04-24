@@ -62,32 +62,27 @@ public class TicketService {
         // Cross-role notifications
         if (reporterOpt.isPresent()) {
             User reporter = reporterOpt.get();
-            System.out.println("Reporter role for notification: " + reporter.getRole());
             if (reporter.getRole() == User.Role.USER) {
                 // Notify all Technicians
-                String message = "New student incident: " + ticket.getTitle() + " at " + ticket.getLocation();
-                List<User> techs = userRepository.findByRole(User.Role.TECHNICIAN);
-                System.out.println("Notifying " + techs.size() + " technicians");
-                for (User tech : techs) {
-                    notificationService.createNotification(tech.getEmail(), message, NotificationType.TICKET_STATUS);
-                }
+                notificationService.createRoleNotification("TECHNICIAN", 
+                    "New student incident: " + ticket.getTitle() + " at " + ticket.getLocation(), 
+                    NotificationType.TICKET_STATUS);
+                
+                // Notify all Managers
+                notificationService.createRoleNotification("MANAGER", 
+                    "Resource incident reported: " + ticket.getTitle(), 
+                    NotificationType.TICKET_STATUS);
             } else if (reporter.getRole() == User.Role.TECHNICIAN) {
                 // Notify all Students (USER role)
-                String message = "Campus Maintenance Update from Tech: " + ticket.getTitle();
-                List<User> students = userRepository.findByRole(User.Role.USER);
-                System.out.println("Notifying " + students.size() + " students");
-                for (User student : students) {
-                    notificationService.createNotification(student.getEmail(), message, NotificationType.TICKET_STATUS);
-                }
+                notificationService.createRoleNotification("USER", 
+                    "Campus Maintenance Update: " + ticket.getTitle(), 
+                    NotificationType.TICKET_STATUS);
             }
         } else {
-            System.out.println("Reporter not found in database: " + userEmail + ". Attempting broadcast fallback.");
-            // If unknown reporter (e.g., guest), notify technicians anyway
-            String message = "Guest incident reported: " + ticket.getTitle();
-            List<User> techs = userRepository.findByRole(User.Role.TECHNICIAN);
-            for (User tech : techs) {
-                notificationService.createNotification(tech.getEmail(), message, NotificationType.TICKET_STATUS);
-            }
+            // Fallback for unknown reporters
+            notificationService.createRoleNotification("TECHNICIAN", 
+                "Guest incident reported: " + ticket.getTitle(), 
+                NotificationType.TICKET_STATUS);
         }
 
         return savedTicket;
