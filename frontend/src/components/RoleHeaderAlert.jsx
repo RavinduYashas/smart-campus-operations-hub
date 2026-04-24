@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AlertCircle, CheckCircle2, Wrench, BarChart2, Bell } from 'lucide-react';
 
 const RoleHeaderAlert = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     if (!user) return null;
 
@@ -13,6 +15,7 @@ const RoleHeaderAlert = () => {
                 return {
                     label: 'System Control',
                     message: 'Pending resource approvals and system health reports require your attention.',
+                    targetPath: '/admin/bookings',
                     icon: <AlertCircle className="text-amber-500" size={18} />,
                     bgColor: 'bg-amber-50',
                     borderColor: 'border-amber-100',
@@ -22,6 +25,7 @@ const RoleHeaderAlert = () => {
                 return {
                     label: 'Operations Review',
                     message: 'New resource utilization reports are ready for review.',
+                    targetPath: '/reports',
                     icon: <BarChart2 className="text-blue-500" size={18} />,
                     bgColor: 'bg-blue-50',
                     borderColor: 'border-blue-100',
@@ -31,6 +35,7 @@ const RoleHeaderAlert = () => {
                 return {
                     label: 'Service Task',
                     message: 'New high-priority incident tickets assigned to your queue.',
+                    targetPath: '/technician/tasks',
                     icon: <Wrench className="text-rose-500" size={18} />,
                     bgColor: 'bg-rose-50',
                     borderColor: 'border-rose-100',
@@ -40,6 +45,7 @@ const RoleHeaderAlert = () => {
                 return {
                     label: 'Campus Update',
                     message: 'Check your booking status and active fault reports in the notification hub.',
+                    targetPath: '/notifications',
                     icon: <CheckCircle2 className="text-emerald-500" size={18} />,
                     bgColor: 'bg-emerald-50',
                     borderColor: 'border-emerald-100',
@@ -69,7 +75,10 @@ const RoleHeaderAlert = () => {
                         </p>
                     </div>
                 </div>
-                <button className={`hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider ${content.textColor} hover:opacity-70 transition-opacity shrink-0`}>
+                <button 
+                    onClick={() => navigate(content.targetPath)}
+                    className={`hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider ${content.textColor} hover:opacity-70 transition-opacity shrink-0`}
+                >
                     View Details
                     <Bell size={14} />
                 </button>
