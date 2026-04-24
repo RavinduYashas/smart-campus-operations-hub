@@ -27,10 +27,10 @@ public class NotificationController {
         return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, role));
     }
 
-    @PostMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable String id) {
+    @PostMapping("/{id}/toggle-read")
+    public ResponseEntity<Void> toggleRead(@PathVariable String id) {
         notificationRepository.findById(id).ifPresent(notif -> {
-            notif.setRead(true);
+            notif.setRead(!notif.isRead());
             notificationRepository.save(notif);
         });
         return ResponseEntity.ok().build();

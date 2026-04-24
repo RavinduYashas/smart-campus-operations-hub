@@ -42,16 +42,16 @@ const NotificationHub = () => {
         return () => clearInterval(intervalId);
     }, []);
 
-    const markAsRead = async (id) => {
+    const toggleRead = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:8080/api/notifications/${id}/read`, {}, {
+            await axios.post(`http://localhost:8080/api/notifications/${id}/toggle-read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Optimistic update
-            setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: !n.read } : n));
         } catch (error) {
-            console.error("Error marking as read", error);
+            console.error("Error toggling read status", error);
         }
     };
 
@@ -169,15 +169,26 @@ const NotificationHub = () => {
                                         </p>
 
                                         <div className="mt-3 flex items-center gap-3">
-                                            {!isRead && (
-                                                <button 
-                                                    onClick={() => markAsRead(notif.id)}
-                                                    className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors px-3 py-1 bg-blue-50 rounded-full"
-                                                >
-                                                    <Check size={12} />
-                                                    Mark as read
-                                                </button>
-                                            )}
+                                            <button 
+                                                onClick={() => toggleRead(notif.id)}
+                                                className={`text-[11px] font-bold flex items-center gap-1 transition-colors px-3 py-1 rounded-full ${
+                                                    isRead 
+                                                    ? 'text-slate-600 bg-slate-100 hover:bg-slate-200' 
+                                                    : 'text-blue-600 bg-blue-50 hover:bg-blue-100'
+                                                }`}
+                                            >
+                                                {isRead ? (
+                                                    <>
+                                                        <Clock size={12} />
+                                                        Mark as unread
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Check size={12} />
+                                                        Mark as read
+                                                    </>
+                                                )}
+                                            </button>
                                             <button className="text-[11px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 transition-colors">
                                                 View Details
                                                 <ChevronRight size={12} />
