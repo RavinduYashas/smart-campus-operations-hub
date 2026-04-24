@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { 
     LayoutDashboard, 
     Users, 
@@ -7,20 +8,93 @@ import {
     Activity,
     Zap,
     ChevronRight,
-    Search
+    Search,
+    Calendar,
+    Bell,
+    CheckCircle2,
+    Clock,
+    Building2,
+    ShieldAlert
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
+    const { user } = useAuth();
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            if (!user) return;
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get('http://localhost:8080/api/notifications/my-alerts', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (Array.isArray(res.data)) {
+                    setNotifications(res.data.slice(0, 4)); // Get top 4
+                } else {
+                    setNotifications([]);
+                }
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+                setNotifications([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNotifications();
+    }, [user]);
+
+    // Role-based Quick Actions
+    const getQuickActions = () => {
+        if (!user) return [];
+        switch(user.role) {
+            case 'ADMIN':
+                return [
+                    { title: 'Manage Users', path: '/admin', icon: <Users />, color: 'bg-indigo-500' },
+                    { title: 'System Alerts', path: '/notifications', icon: <ShieldAlert />, color: 'bg-rose-500' },
+                    { title: 'Facility Approvals', path: '/admin/bookings', icon: <CheckCircle2 />, color: 'bg-emerald-500' }
+                ];
+            case 'MANAGER':
+                return [
+                    { title: 'Review Tickets', path: '/incident-tickets', icon: <Ticket />, color: 'bg-amber-500' },
+                    { title: 'System Reports', path: '/reports', icon: <BarChart />, color: 'bg-blue-500' },
+                ];
+            case 'TECHNICIAN':
+                return [
+                    { title: 'My Tasks', path: '/technician/tasks', icon: <Activity />, color: 'bg-blue-500' },
+                    { title: 'Service Tickets', path: '/tickets', icon: <Zap />, color: 'bg-amber-500' },
+                ];
+            default: // USER
+                return [
+                    { title: 'Book Facility', path: '/user/AssetCatalogue', icon: <Building2 />, color: 'bg-blue-500' },
+                    { title: 'My Bookings', path: '/my-bookings', icon: <Calendar />, color: 'bg-emerald-500' },
+                    { title: 'Report Incident', path: '/incident-tickets', icon: <Ticket />, color: 'bg-rose-500' }
+                ];
+        }
+    };
+
+    const quickActions = getQuickActions();
+
     return (
         <div className="p-6 md:p-10 lg:p-16 max-w-[1600px] mx-auto min-h-screen bg-slate-50/30">
             {/* Contextual Header */}
             <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 animate-in fade-in slide-in-from-left duration-700">
-                <div className="space-y-2">
+                <div className="space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="h-8 w-1.5 bg-accent-gold rounded-full"></div>
-                        <span className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Operational OS</span>
+                        <span className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">Smart Campus OS</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold text-primary-dark tracking-tight">Campus Overview</h1>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-dark tracking-tight">
+                        Welcome back, <br className="hidden md:block" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold to-amber-600">
+                            {user?.name?.split(' ')[0] || 'User'}
+                        </span>
+                    </h1>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -35,73 +109,90 @@ const Dashboard = () => {
                 </div>
             </header>
 
-            {/* Premium KPI Grid */}
+            {/* Quick Actions Grid */}
+            {quickActions.length > 0 && (
+                <div className="mb-12">
+                    <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Quick Actions</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
+                        {quickActions.map((action, idx) => (
+                            <Link 
+                                key={idx} 
+                                to={action.path}
+                                className="group bg-white p-6 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+                            >
+                                <div className={`p-4 rounded-2xl text-white ${action.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                    {React.cloneElement(action.icon, { size: 24 })}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-600 transition-colors">{action.title}</h3>
+                                    <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 mt-1">
+                                        Access module <ChevronRight size={14} />
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Premium KPI Grid - Dynamic based on role */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12">
-                <StatCard 
-                    icon={<Users className="w-6 h-6 text-secondary-blue" />} 
-                    title="Active Sessions" 
-                    value="1,284" 
-                    trend="+12% YoY"
-                    positive={true}
-                />
-                <StatCard 
-                    icon={<Ticket className="w-6 h-6 text-primary-dark" />} 
-                    title="Pending Ops" 
-                    value="42" 
-                    trend="5 Critical"
-                    positive={false}
-                />
-                <StatCard 
-                    icon={<Activity className="w-6 h-6 text-accent-orange" />} 
-                    title="Core Load" 
-                    value="24%" 
-                    trend="Stable"
-                    positive={true}
-                />
-                <StatCard 
-                    icon={<Zap className="w-6 h-6 text-accent-gold" />} 
-                    title="Power Flow" 
-                    value="452 kW" 
-                    trend="Normal"
-                    positive={true}
-                />
+                {user?.role === 'USER' ? (
+                    <>
+                        <StatCard icon={<Calendar className="w-6 h-6 text-emerald-600" />} title="My Bookings" value="2" trend="Active" positive={true} />
+                        <StatCard icon={<Ticket className="w-6 h-6 text-rose-600" />} title="Open Tickets" value="0" trend="All clear" positive={true} />
+                        <StatCard icon={<Bell className="w-6 h-6 text-amber-600" />} title="Unread Alerts" value={Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0} trend="Check Hub" positive={false} />
+                        <StatCard icon={<Building2 className="w-6 h-6 text-blue-600" />} title="Campus Status" value="Online" trend="Operational" positive={true} />
+                    </>
+                ) : (
+                    <>
+                        <StatCard icon={<Users className="w-6 h-6 text-secondary-blue" />} title="Active Sessions" value="1,284" trend="+12% YoY" positive={true} />
+                        <StatCard icon={<Ticket className="w-6 h-6 text-rose-600" />} title="Pending Ops" value="42" trend="5 Critical" positive={false} />
+                        <StatCard icon={<Activity className="w-6 h-6 text-accent-orange" />} title="Core Load" value="24%" trend="Stable" positive={true} />
+                        <StatCard icon={<Zap className="w-6 h-6 text-accent-gold" />} title="Power Flow" value="452 kW" trend="Normal" positive={true} />
+                    </>
+                )}
             </div>
 
             {/* Intelligence & Activity Section */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Insights Panel */}
                 <div className="lg:col-span-8 bg-white rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-100 p-8 md:p-12">
-                    <div className="flex items-center justify-between mb-10">
+                    <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
                             <div className="bg-primary-dark p-3 rounded-2xl shadow-xl shadow-slate-200">
-                                <LayoutDashboard className="text-accent-gold w-6 h-6" />
+                                <Bell className="text-accent-gold w-6 h-6" />
                             </div>
-                            <h2 className="text-2xl font-bold text-primary-dark tracking-tight">System Intelligence</h2>
+                            <h2 className="text-2xl font-bold text-primary-dark tracking-tight">Recent Alerts & Intelligence</h2>
                         </div>
-                        <button className="text-xs font-bold text-accent-orange flex items-center gap-2 hover:bg-accent-gold/10 px-4 py-2.5 rounded-xl transition-all">
-                           Live Activity <ChevronRight size={14} />
-                        </button>
+                        <Link to="/notifications" className="text-xs font-bold text-accent-orange flex items-center gap-2 hover:bg-accent-gold/10 px-4 py-2.5 rounded-xl transition-all">
+                           View All <ChevronRight size={14} />
+                        </Link>
                     </div>
 
                     <div className="space-y-4">
-                        <ActivityItem 
-                            label="Core Network" 
-                            desc="Building A distribution switch successfully synchronized with secondary node." 
-                            time="2h" 
-                            type="SUCCESS" 
-                        />
-                        <ActivityItem 
-                            label="Access Violation" 
-                            desc="Multiple failed login attempts detected from unauthorized subnet 192.168.x.x." 
-                            time="4h" 
-                            type="WARNING" 
-                        />
-                        <ActivityItem 
-                            label="Logistics Hub" 
-                            desc="Autonomous shuttle battery lifecycle maintenance scheduled for 04:00 AM." 
-                            time="6h" 
-                            type="INFO" 
-                        />
+                        {loading ? (
+                            <div className="flex justify-center py-8">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+                            </div>
+                        ) : notifications.length > 0 ? (
+                            notifications.map(alert => (
+                                <ActivityItem 
+                                    key={alert.id}
+                                    label={alert.title || "Notification"} 
+                                    desc={alert.message || ""} 
+                                    time={alert.createdAt ? new Date(alert.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "Now"} 
+                                    type={alert.title && alert.title.toLowerCase().includes('incident') ? 'WARNING' : 'INFO'} 
+                                    isNew={!alert.read}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-12 bg-slate-50 rounded-3xl border border-slate-100">
+                                <CheckCircle2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                                <h3 className="font-bold text-slate-700">All caught up!</h3>
+                                <p className="text-sm text-slate-500">You have no recent alerts or intelligence updates.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -129,35 +220,44 @@ const Dashboard = () => {
     );
 };
 
-const StatCard = ({ icon, title, value, trend, positive }) => (
-    <div className="bg-white p-8 rounded-[2rem] shadow-[0_15px_40px_-5px_rgba(0,0,0,0.02)] border border-slate-100 hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1.5 group">
-        <div className="flex items-center justify-between mb-8">
-            <div className="bg-slate-50 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">{icon}</div>
-            <div className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-tight ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                {trend}
+function StatCard({ icon, title, value, trend, positive }) {
+    return (
+        <div className="bg-white p-8 rounded-[2rem] shadow-[0_15px_40px_-5px_rgba(0,0,0,0.02)] border border-slate-100 hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1.5 group">
+            <div className="flex items-center justify-between mb-8">
+                <div className="bg-slate-50 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">{icon}</div>
+                <div className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-tight ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                    {trend}
+                </div>
+            </div>
+            <div className="space-y-1">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{title}</span>
+                <div className="text-4xl lg:text-5xl font-bold text-primary-dark tracking-tighter">{value}</div>
             </div>
         </div>
-        <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{title}</span>
-            <div className="text-4xl lg:text-5xl font-bold text-primary-dark tracking-tighter">{value}</div>
-        </div>
-    </div>
-);
+    );
+}
 
-const ActivityItem = ({ label, desc, time, type }) => (
-    <div className="flex items-start gap-5 p-6 hover:bg-slate-50 rounded-3xl transition-all border border-transparent hover:border-slate-100 group cursor-default">
-        <div className={`mt-1.5 h-3 w-3 rounded-full shrink-0 ring-4 ${
-            type === 'SUCCESS' ? 'bg-emerald-500 ring-emerald-50' : 
-            type === 'WARNING' ? 'bg-accent-orange ring-rose-50' : 'bg-secondary-blue ring-blue-50'
-        }`}></div>
-        <div className="space-y-1 flex-grow">
-            <div className="flex justify-between items-center">
-                <h4 className="font-bold text-primary-dark tracking-tight text-lg leading-none">{label}</h4>
-                <span className="text-xs font-bold text-slate-400 uppercase">{time} ago</span>
+function ActivityItem({ label, desc, time, type, isNew }) {
+    return (
+        <div className={`flex items-start gap-5 p-5 rounded-3xl transition-all border ${isNew ? 'bg-blue-50/50 border-blue-100' : 'bg-white border-slate-100 hover:border-slate-200'} group cursor-default`}>
+            <div className={`mt-1.5 h-3 w-3 rounded-full shrink-0 ring-4 ${
+                type === 'SUCCESS' ? 'bg-emerald-500 ring-emerald-50' : 
+                type === 'WARNING' ? 'bg-rose-500 ring-rose-50' : 'bg-blue-500 ring-blue-50'
+            }`}></div>
+            <div className="space-y-1 flex-grow">
+                <div className="flex justify-between items-start">
+                    <h4 className="font-bold text-primary-dark tracking-tight text-lg leading-none flex items-center gap-2">
+                        {label}
+                        {isNew && <span className="bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">New</span>}
+                    </h4>
+                    <span className="text-xs font-bold text-slate-400 uppercase flex items-center gap-1">
+                        <Clock size={12} /> {time}
+                    </span>
+                </div>
+                <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl">{desc}</p>
             </div>
-            <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl">{desc}</p>
         </div>
-    </div>
-);
+    );
+}
 
 export default Dashboard;
