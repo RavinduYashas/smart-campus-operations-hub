@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Building, Trash2 } from 'lucide-react';
+import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Building, Trash2, AlertTriangle, X } from 'lucide-react';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('ALL');
+    const [userToDelete, setUserToDelete] = useState(null);
 
     useEffect(() => {
         fetchUsers();
@@ -26,18 +27,20 @@ const AdminUsers = () => {
         }
     };
 
-    const handleDeleteUser = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    const confirmDelete = async () => {
+        if (!userToDelete) return;
         
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/admin/users/${id}`, {
+            await axios.delete(`http://localhost:8080/api/admin/users/${userToDelete.id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setUsers(users.filter(u => u.id !== id));
+            setUsers(users.filter(u => u.id !== userToDelete.id));
+            setUserToDelete(null);
         } catch (error) {
             console.error("Error deleting user:", error);
             alert("Failed to delete user. Please check permissions.");
+            setUserToDelete(null);
         }
     };
 
@@ -179,7 +182,7 @@ const AdminUsers = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right">
                                                 <button 
-                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    onClick={() => setUserToDelete(user)}
                                                     className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                                                     title="Delete User"
                                                 >
@@ -201,6 +204,47 @@ const AdminUsers = () => {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {userToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-6 sm:p-8">
+                            <div className="flex items-start justify-between mb-6">
+                                <div className="h-14 w-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center border border-rose-100 shrink-0">
+                                    <AlertTriangle size={28} />
+                                </div>
+                                <button 
+                                    onClick={() => setUserToDelete(null)}
+                                    className="p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-full transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Delete User Account</h3>
+                            <p className="text-slate-500 mb-6 leading-relaxed">
+                                Are you sure you want to delete <span className="font-bold text-slate-700">{userToDelete.name}</span>? This action is permanent and cannot be undone. All data associated with this user will be removed.
+                            </p>
+                            
+                            <div className="flex items-center gap-3 w-full">
+                                <button 
+                                    onClick={() => setUserToDelete(null)}
+                                    className="flex-1 px-5 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-2xl font-bold text-sm transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={confirmDelete}
+                                    className="flex-1 px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-200 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Trash2 size={16} /> Yes, Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
