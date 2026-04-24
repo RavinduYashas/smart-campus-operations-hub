@@ -12,7 +12,7 @@ import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
 
-// ============ CORRECTED IMPORTS ============
+// ============ IMPORTS ============
 // User pages
 import AssetCatalogue from './pages/user/AssetCatalogue';     // Module A - Your module
 import BookingManagement from './pages/user/BookingManagement';     // Module B
@@ -29,6 +29,12 @@ import TechnicianQueue from './pages/technician/TechnicianQueue';
 import ResourceInventoryReports from './pages/manager/ResourceInventoryReports';
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 
+// ============ ADD THESE PLACEHOLDER COMPONENTS ============
+const Attachments = () => <div className="p-8">Attachments Page - Coming Soon</div>;
+const TechnicianUpdates = () => <div className="p-8">Technician Updates - Coming Soon</div>;
+const IncidentTickets = () => <div className="p-8">Incident Tickets - Coming Soon</div>;
+// ========================================================
+
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
     const { login, user, loading } = useAuth();
@@ -38,12 +44,10 @@ const TokenHandler = () => {
     useEffect(() => {
         if (token) {
             if (window.opener) {
-                // If we are in a popup window, send the token to the parent window and close the popup
                 window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
                 window.close();
                 return;
             } else {
-                // Normal redirect flow
                 login(token);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -69,7 +73,6 @@ const TokenHandler = () => {
         }
     }, [user, loading, navigate]);
 
-    // Show a spinner while the authentication check is happening
     if (token || loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -80,8 +83,6 @@ const TokenHandler = () => {
 
     return <Login />;
 };
-
-
 
 function App() {
     return (
@@ -94,11 +95,8 @@ function App() {
                         <Routes>
                             <Route path="/login" element={<TokenHandler />} />
                             <Route path="/" element={<Home />} />
-
-                            {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
 
-                            {/* Generic Protected Dashboard and New Shared Routes */}
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
                                 <Route path="/notifications" element={<NotificationHub />} />
@@ -106,19 +104,16 @@ function App() {
                                 <Route path="/technician-updates" element={<TechnicianUpdates />} />
                             </Route>
 
-                            {/* Incident Tickets restricted from Technicians */}
                             <Route element={<ProtectedRoute allowedRoles={['USER', 'MANAGER']} />}>
                                 <Route path="/incident-tickets" element={<IncidentTickets />} />
                             </Route>
 
-                            {/* User Specific Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
                                 <Route path="/user/AssetCatalogue" element={<AssetCatalogue />} />
                                 <Route path="/my-bookings" element={<BookingManagement />} />
                                 <Route path="/report-fault" element={<IncidentTicketing />} />
                             </Route>
 
-                            {/* Role-Specific Protected Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
