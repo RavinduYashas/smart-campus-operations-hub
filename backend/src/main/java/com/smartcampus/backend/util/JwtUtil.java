@@ -12,11 +12,18 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Using a securely generated key for HS256 instead of a hardcoded short string
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
 
-    @Value("${jwt.expiration:86400000}") // Default 1 day
+    @Value("${app.jwt.expiration:86400000}") // Default 1 day
     private long jwtExpirationInMs;
+
+    private Key key;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
 
     public String generateToken(String email, String role) {
         return Jwts.builder()
