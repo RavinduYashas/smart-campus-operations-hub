@@ -11,12 +11,17 @@ import AdminPanel from './pages/admin/AdminPanel';
 import TicketPage from './pages/technician/TicketPage';
 import ReportsPage from './pages/manager/ReportsPage';
 import Unauthorized from './pages/Unauthorized';
-import AssetsCatalogue from './pages/user/AssetsCatalogue';
-import BookingManagement from './pages/user/BookingManagement';
-import IncidentTicketing from './pages/user/IncidentTicketing';
-import NotificationHub from './pages/NotificationHub';
+
+// ============ CORRECTED IMPORTS ============
+// User pages
+import AssetCatalogue from './pages/user/AssetCatalogue';     // Module A - Your module
+import BookingManagement from './pages/user/BookingManagement';     // Module B
+import IncidentTicketing from './pages/user/IncidentTicketing';     // Module C
+import NotificationHub from './pages/NotificationHub';              // Module D
+
+// Admin pages
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
-import AssetManagement from './pages/admin/AssetManagement';
+import AssetManagement from './pages/admin/AssetsManagement';     // Module A Admin - Your module
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 import TechnicianQueue from './pages/technician/TechnicianQueue';
 import IncidentTickets from './pages/IncidentTickets';
@@ -108,7 +113,7 @@ function App() {
 
                             {/* User Specific Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
-                                <Route path="/assets" element={<AssetsCatalogue />} />
+                                <Route path="/user/AssetCatalogue" element={<AssetCatalogue />} />
                                 <Route path="/my-bookings" element={<BookingManagement />} />
                                 <Route path="/report-fault" element={<IncidentTicketing />} />
                             </Route>

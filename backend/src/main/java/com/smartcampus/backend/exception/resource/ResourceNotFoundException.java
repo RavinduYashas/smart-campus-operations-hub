@@ -1,4 +1,3 @@
-// src/main/java/com/smartcampus/backend/exception/ResourceNotFoundException.java
 package com.smartcampus.backend.exception.resource;
 
 public class ResourceNotFoundException extends RuntimeException {

@@ -32,7 +32,7 @@ const Navbar = () => {
         { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={15} />, roles: ['USER', 'ADMIN', 'TECHNICIAN', 'MANAGER'] },
 
         // USER role — Module A, B, C
-        { path: '/assets', label: 'Catalogue', icon: <Building2 size={15} />, roles: ['USER'] },
+        { path: '/user/AssetCatalogue', label: 'Catalogue', icon: <Building2 size={15} />, roles: ['USER'] },
         { path: '/my-bookings', label: 'My Bookings', icon: <Calendar size={15} />, roles: ['USER'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['USER'] },
 
@@ -44,7 +44,7 @@ const Navbar = () => {
 
         // ADMIN role — in logical order
         { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
-        { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/AssetsManagement', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['ADMIN'] },

@@ -14,20 +14,26 @@ public class Resource {
     private String id;
     
     @Indexed
+    private String resourceCode;
+    
+    @Indexed
     private String name;
     
     private ResourceType type;
     private Integer capacity;
     private String location;
+    private String building;
+    private String floor;
     private ResourceStatus status;
     private List<AvailabilityWindow> availabilityWindows = new ArrayList<>();
     private String description;
     private String imageUrl;
+    private String imagePublicId;  // For cloud storage
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
     public enum ResourceType {
-        LECTURE_HALL, LAB, MEETING_ROOM, EQUIPMENT
+        LECTURE_HALL, LAB, MEETING_ROOM, EQUIPMENT, OTHER
     }
     
     public enum ResourceStatus {
@@ -60,20 +66,12 @@ public class Resource {
         this.updatedAt = LocalDateTime.now();
     }
     
-    public Resource(String name, ResourceType type, Integer capacity, 
-                    String location, ResourceStatus status) {
-        this.name = name;
-        this.type = type;
-        this.capacity = capacity;
-        this.location = location;
-        this.status = status;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-    
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    
+    public String getResourceCode() { return resourceCode; }
+    public void setResourceCode(String resourceCode) { this.resourceCode = resourceCode; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -86,6 +84,12 @@ public class Resource {
     
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    
+    public String getBuilding() { return building; }
+    public void setBuilding(String building) { this.building = building; }
+    
+    public String getFloor() { return floor; }
+    public void setFloor(String floor) { this.floor = floor; }
     
     public ResourceStatus getStatus() { return status; }
     public void setStatus(ResourceStatus status) { this.status = status; }
@@ -100,6 +104,9 @@ public class Resource {
     
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    
+    public String getImagePublicId() { return imagePublicId; }
+    public void setImagePublicId(String imagePublicId) { this.imagePublicId = imagePublicId; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
