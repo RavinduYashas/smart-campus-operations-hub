@@ -5,9 +5,7 @@ import com.smartcampus.backend.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,14 @@ public class NotificationController {
                 .orElse("USER");
         
         return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, role));
+    }
+
+    @PostMapping("/{id}/read")
+    public ResponseEntity<Void> markAsRead(@PathVariable String id) {
+        notificationRepository.findById(id).ifPresent(notif -> {
+            notif.setRead(true);
+            notificationRepository.save(notif);
+        });
+        return ResponseEntity.ok().build();
     }
 }

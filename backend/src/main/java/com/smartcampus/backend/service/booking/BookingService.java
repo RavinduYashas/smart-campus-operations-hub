@@ -23,6 +23,7 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ResourceRepository resourceRepository;
+    private final com.smartcampus.backend.service.NotificationService notificationService;
 
     public BookingResponseDTO createBooking(BookingRequestDTO requestDTO, String userEmail) {
         // Check for scheduling conflicts
@@ -47,6 +48,15 @@ public class BookingService {
         booking.setAttendees(requestDTO.getAttendees());
         
         Booking savedBooking = bookingRepository.save(booking);
+
+        // Notify Managers about new booking
+        notificationService.createRoleNotification("MANAGER", 
+            "New Booking Request", 
+            "A new booking request for " + requestDTO.getPurpose() + " is pending approval.", 
+            "NORMAL", 
+            "BOOKING", 
+            com.smartcampus.backend.model.Notification.NotificationType.TICKET_STATUS); // Using TICKET_STATUS as generic for now or I can add a new type
+
         return mapToDTO(savedBooking);
     }
 
@@ -74,7 +84,20 @@ public class BookingService {
         }
         booking.setUpdatedAt(LocalDateTime.now());
         
-        return mapToDTO(bookingRepository.save(booking));
+        Booking savedBooking = bookingRepository.save(booking);
+
+        // Notify the user about the status update
+        String title = booking.getStatus() == BookingStatus.APPROVED ? "Booking Approved" : "Booking Rejected";
+        String priority = booking.getStatus() == BookingStatus.APPROVED ? "NORMAL" : "URGENT";
+        
+        notificationService.createNotification(booking.getUserEmail(), 
+            title, 
+            "Your booking for '" + booking.getPurpose() + "' has been " + booking.getStatus().toString().toLowerCase() + ".", 
+            priority, 
+            "BOOKING", 
+            com.smartcampus.backend.model.Notification.NotificationType.BOOKING_APPROVED); // Map appropriately
+
+        return mapToDTO(savedBooking);
     }
 
     public BookingResponseDTO verifyBooking(String id) {

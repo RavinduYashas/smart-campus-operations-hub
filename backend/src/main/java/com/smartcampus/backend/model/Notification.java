@@ -17,6 +17,9 @@ public class Notification {
     private String userId;
     private String targetRole; // e.g., "ADMIN", "TECHNICIAN", "MANAGER"
     private String message;
+    private String title;
+    private String priority; // e.g., "URGENT", "NORMAL", "LOW"
+    private String category; // e.g., "MAINTENANCE", "BOOKING", "SECURITY"
     private NotificationType type;
     private boolean isRead;
     private LocalDateTime createdAt;
