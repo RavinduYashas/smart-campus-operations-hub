@@ -38,12 +38,12 @@ const AssetsManagement = () => {
         floor: '',
         description: '',
         imageUrl: '',
-        status: 'ACTIVE'  // ← ADDED STATUS FIELD
+        status: 'ACTIVE'
     });
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-    // ========== AXIOS INTERCEPTOR - AUTOMATICALLY ADD TOKEN ==========
+    // Axios interceptor for auth token
     axios.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');
@@ -52,13 +52,9 @@ const AssetsManagement = () => {
             }
             return config;
         },
-        (error) => {
-            return Promise.reject(error);
-        }
+        (error) => Promise.reject(error)
     );
-    // ================================================================
 
-    // Resource Types
     const resourceTypes = [
         { id: 'LECTURE_HALL', name: 'Lecture Hall', icon: <Users className="w-4 h-4" /> },
         { id: 'LAB', name: 'Laboratory', icon: <Wifi className="w-4 h-4" /> },
@@ -67,7 +63,6 @@ const AssetsManagement = () => {
         { id: 'OTHER', name: 'Other', icon: <Building2 className="w-4 h-4" /> }
     ];
 
-    // SLIIT Buildings
     const buildings = [
         { id: 'Main Building', name: 'Main Building', icon: <Landmark className="w-4 h-4" /> },
         { id: 'New Building', name: 'New Building', icon: <Building2 className="w-4 h-4" /> },
@@ -76,13 +71,11 @@ const AssetsManagement = () => {
         { id: 'Other', name: 'Special Locations', icon: <Trees className="w-4 h-4" /> }
     ];
 
-    // Status Options
     const statusOptions = [
         { id: 'ACTIVE', name: 'Active', icon: <CheckCircle2 className="w-4 h-4 text-green-500" /> },
         { id: 'OUT_OF_SERVICE', name: 'Out of Service', icon: <XCircle className="w-4 h-4 text-red-500" /> }
     ];
 
-    // Fetch all resources
     const fetchResources = async () => {
         setLoading(true);
         try {
@@ -100,23 +93,26 @@ const AssetsManagement = () => {
         fetchResources();
     }, []);
 
-    // Filter resources
+    // Apply filters whenever dependencies change
     useEffect(() => {
         let filtered = [...resources];
         
-        if (searchTerm) {
+        // Filter by search term
+        if (searchTerm.trim() !== '') {
             const term = searchTerm.toLowerCase();
             filtered = filtered.filter(r => 
-                r.name.toLowerCase().includes(term) ||
+                r.name?.toLowerCase().includes(term) ||
                 (r.resourceCode && r.resourceCode.toLowerCase().includes(term)) ||
                 (r.location && r.location.toLowerCase().includes(term))
             );
         }
         
+        // Filter by building
         if (selectedBuilding !== 'all') {
             filtered = filtered.filter(r => r.building === selectedBuilding);
         }
         
+        // Filter by type
         if (selectedType !== 'all') {
             filtered = filtered.filter(r => r.type === selectedType);
         }
@@ -124,7 +120,6 @@ const AssetsManagement = () => {
         setFilteredResources(filtered);
     }, [searchTerm, selectedBuilding, selectedType, resources]);
 
-    // Handle image file selection - Convert to Base64
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -147,7 +142,6 @@ const AssetsManagement = () => {
         }
     };
 
-    // Remove image
     const removeImage = () => {
         setPreviewUrl(null);
         setFormData({...formData, imageUrl: ''});
@@ -156,17 +150,13 @@ const AssetsManagement = () => {
         }
     };
 
-    // Create or Update Resource
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Prepare data with status
         const submitData = {
             ...formData,
             status: formData.status || 'ACTIVE'
         };
-        
-        console.log("Submitting data:", submitData); // Debug log
         
         try {
             if (editingResource) {
@@ -181,12 +171,10 @@ const AssetsManagement = () => {
             resetForm();
         } catch (error) {
             console.error('Error:', error);
-            console.error('Response:', error.response?.data);
             alert(error.response?.data?.message || error.response?.data?.error || 'Error saving resource');
         }
     };
 
-    // Delete Resource
     const handleDelete = async (id, name) => {
         if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
             try {
@@ -199,7 +187,6 @@ const AssetsManagement = () => {
         }
     };
 
-    // Toggle Status
     const handleStatusToggle = async (id, currentStatus) => {
         const newStatus = currentStatus === 'ACTIVE' ? 'OUT_OF_SERVICE' : 'ACTIVE';
         try {
@@ -299,7 +286,6 @@ const AssetsManagement = () => {
         );
     }
 
-    // Stats
     const stats = {
         total: resources.length,
         lectureHalls: resources.filter(r => r.type === 'LECTURE_HALL').length,
@@ -313,7 +299,6 @@ const AssetsManagement = () => {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            {/* Success Notification */}
             {showSuccess && (
                 <div className="fixed top-20 right-4 z-50 animate-in slide-in-from-right duration-300">
                     <div className="bg-green-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2">
@@ -384,9 +369,8 @@ const AssetsManagement = () => {
                     </div>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    {/* Building Filters */}
+                {/* Building Filters */}
+                <div className="flex flex-wrap gap-2 mb-4">
                     <button
                         onClick={() => setSelectedBuilding('all')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -409,12 +393,15 @@ const AssetsManagement = () => {
                         >
                             {building.icon}
                             {building.name}
+                            <span className="text-xs ml-1 text-slate-400">
+                                ({resources.filter(r => r.building === building.id).length})
+                            </span>
                         </button>
                     ))}
-                    
-                    <div className="w-px h-8 bg-slate-200 mx-2" />
-                    
-                    {/* Type Filters */}
+                </div>
+
+                {/* Type Filters */}
+                <div className="flex flex-wrap gap-2 mb-6">
                     <button
                         onClick={() => setSelectedType('all')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -437,54 +424,165 @@ const AssetsManagement = () => {
                         >
                             {type.icon}
                             {type.name}
+                            <span className="text-xs ml-1 text-slate-400">
+                                ({resources.filter(r => r.type === type.id).length})
+                            </span>
                         </button>
                     ))}
                 </div>
 
-                {/* Search & View Controls */}
+                {/* Search Bar */}
                 <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
-                    <div className="flex flex-wrap gap-4 items-center justify-between">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                            <input
-                                type="text"
-                                placeholder="Search by name, code, or location..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-accent-gold outline-none"
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary-dark text-white' : 'bg-slate-100 text-slate-500'}`}
-                            >
-                                <Grid3x3 className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-primary-dark text-white' : 'bg-slate-100 text-slate-500'}`}
-                            >
-                                <List className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={fetchResources}
-                                className="p-2 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200"
-                            >
-                                <RefreshCw className="w-4 h-4" />
-                            </button>
-                        </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                        <input
+                            type="text"
+                            placeholder="Search by name, code, or location..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-accent-gold outline-none"
+                        />
                     </div>
                 </div>
 
-                {/* Resources Display - Keep your existing grid/list view code here */}
-                {/* ... (your existing grid and list view code remains the same) ... */}
+                {/* Results Count */}
+                <div className="mb-4 text-sm text-slate-500">
+                    Showing {filteredResources.length} of {resources.length} resources
+                </div>
+
+                {/* Resources Grid */}
+                {loading ? (
+                    <div className="flex justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-dark"></div>
+                    </div>
+                ) : viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredResources.map((resource) => (
+                            <div key={resource.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all">
+                                <div className="relative h-48 bg-slate-100">
+                                    {resource.imageUrl ? (
+                                        <img src={resource.imageUrl} alt={resource.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Image className="w-12 h-12 text-slate-300" />
+                                        </div>
+                                    )}
+                                    <div className="absolute top-2 right-2">
+                                        {getBuildingBadge(resource.building)}
+                                    </div>
+                                </div>
+                                
+                                <div className="p-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-2">
+                                            {getTypeIcon(resource.type)}
+                                            <span className="text-xs font-semibold text-accent-orange">{resource.resourceCode || resource.id.slice(-4)}</span>
+                                        </div>
+                                        <span className={`text-xs px-2 py-1 rounded-full ${
+                                            resource.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                        }`}>
+                                            {resource.status === 'ACTIVE' ? 'Active' : 'Maintenance'}
+                                        </span>
+                                    </div>
+                                    
+                                    <h3 className="text-lg font-bold text-primary-dark mb-1">{resource.name}</h3>
+                                    <p className="text-slate-500 text-xs mb-2">{getTypeLabel(resource.type)}</p>
+                                    
+                                    <div className="space-y-2 mb-4">
+                                        <div className="flex items-center gap-2 text-slate-600 text-sm">
+                                            <MapPin className="w-4 h-4 text-slate-400" />
+                                            <span>{resource.location}{resource.floor ? `, ${resource.floor}` : ''}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-slate-600 text-sm">
+                                            <Users className="w-4 h-4 text-slate-400" />
+                                            <span>Capacity: {resource.capacity}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                                        <button
+                                            onClick={() => handleStatusToggle(resource.id, resource.status)}
+                                            className={`text-xs px-2 py-1 rounded-full ${
+                                                resource.status === 'ACTIVE' 
+                                                    ? 'bg-green-50 text-green-600 hover:bg-green-100' 
+                                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                            }`}
+                                        >
+                                            {resource.status === 'ACTIVE' ? 'Mark Maintenance' : 'Mark Active'}
+                                        </button>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => openEditModal(resource)} className="p-1.5 text-slate-400 hover:text-primary-dark rounded-lg hover:bg-slate-100">
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => handleDelete(resource.id, resource.name)} className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+                        <table className="w-full min-w-[800px]">
+                            <thead className="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Image</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Code</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Name</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Type</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Capacity</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Location</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Building</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Status</th>
+                                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {filteredResources.map((resource) => (
+                                    <tr key={resource.id} className="hover:bg-slate-50">
+                                        <td className="px-4 py-3">
+                                            {resource.imageUrl ? (
+                                                <img src={resource.imageUrl} alt={resource.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                                                    <Image className="w-5 h-5 text-slate-400" />
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm font-mono text-accent-orange">{resource.resourceCode || resource.id.slice(-4)}</td>
+                                        <td className="px-4 py-3 font-medium text-primary-dark">{resource.name}</td>
+                                        <td className="px-4 py-3 text-sm">{getTypeLabel(resource.type)}</td>
+                                        <td className="px-4 py-3 text-sm">{resource.capacity}</td>
+                                        <td className="px-4 py-3 text-sm text-slate-600">{resource.location}</td>
+                                        <td className="px-4 py-3">{getBuildingBadge(resource.building)}</td>
+                                        <td className="px-4 py-3">
+                                            <button
+                                                onClick={() => handleStatusToggle(resource.id, resource.status)}
+                                                className={`text-xs px-2 py-1 rounded-full ${resource.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                                            >
+                                                {resource.status === 'ACTIVE' ? 'Active' : 'Maintenance'}
+                                            </button>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="flex justify-end gap-1">
+                                                <button onClick={() => openEditModal(resource)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">Edit</button>
+                                                <button onClick={() => handleDelete(resource.id, resource.name)} className="p-1.5 text-red-600 hover:bg-red-50 rounded">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
                 {filteredResources.length === 0 && !loading && (
                     <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
                         <Building2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                         <p className="text-slate-500 mb-2">No resources found.</p>
-                        <p className="text-slate-400 text-sm">Click "Add Resource" to create your first facility or equipment.</p>
+                        <p className="text-slate-400 text-sm">Try changing your filters or add a new resource.</p>
                     </div>
                 )}
             </div>
@@ -503,87 +601,47 @@ const AssetsManagement = () => {
                         </div>
                         
                         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-                            {/* Image Upload Section */}
+                            {/* Image Upload */}
                             <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center">
                                 {previewUrl ? (
                                     <div className="relative">
                                         <img src={previewUrl} alt="Preview" className="w-full h-40 object-cover rounded-lg" />
-                                        <button
-                                            type="button"
-                                            onClick={removeImage}
-                                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                        >
+                                        <button type="button" onClick={removeImage} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600">
                                             <TrashIcon className="w-4 h-4" />
                                         </button>
                                     </div>
                                 ) : (
-                                    <div
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="cursor-pointer py-8"
-                                    >
+                                    <div onClick={() => fileInputRef.current?.click()} className="cursor-pointer py-8">
                                         <Upload className="w-12 h-12 text-slate-400 mx-auto mb-2" />
                                         <p className="text-slate-500 text-sm">Click to upload image</p>
                                         <p className="text-slate-400 text-xs">PNG, JPG, JPEG, GIF up to 5MB</p>
                                     </div>
                                 )}
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                />
+                                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Resource Code</label>
-                                    <input
-                                        type="text"
-                                        value={formData.resourceCode}
-                                        onChange={(e) => setFormData({...formData, resourceCode: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                        placeholder="e.g., F101, LAB01"
-                                    />
+                                    <input type="text" value={formData.resourceCode} onChange={(e) => setFormData({...formData, resourceCode: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg" placeholder="e.g., F101" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                        placeholder="e.g., Computer Lab 101"
-                                    />
+                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Type *</label>
-                                    <select
-                                        required
-                                        value={formData.type}
-                                        onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                    >
-                                        {resourceTypes.map(type => (
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        ))}
+                                    <select required value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg">
+                                        {resourceTypes.map(type => <option key={type.id} value={type.id}>{type.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Building *</label>
-                                    <select
-                                        required
-                                        value={formData.building}
-                                        onChange={(e) => setFormData({...formData, building: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                    >
-                                        {buildings.map(b => (
-                                            <option key={b.id} value={b.id}>{b.name}</option>
-                                        ))}
+                                    <select required value={formData.building} onChange={(e) => setFormData({...formData, building: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg">
+                                        {buildings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                                     </select>
                                 </div>
                             </div>
@@ -591,80 +649,34 @@ const AssetsManagement = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Capacity *</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="1"
-                                        value={formData.capacity}
-                                        onChange={(e) => setFormData({...formData, capacity: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                        placeholder="Number of people/units"
-                                    />
+                                    <input type="number" required min="1" value={formData.capacity} onChange={(e) => setFormData({...formData, capacity: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Floor/Level</label>
-                                    <input
-                                        type="text"
-                                        value={formData.floor}
-                                        onChange={(e) => setFormData({...formData, floor: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                        placeholder="e.g., Level 2, Ground Floor"
-                                    />
+                                    <input type="text" value={formData.floor} onChange={(e) => setFormData({...formData, floor: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg" placeholder="e.g., Level 2" />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Location *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                    placeholder="e.g., Block A, Room 101"
-                                />
+                                <input type="text" required value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
                             </div>
 
-                            {/* Status Field - ADDED */}
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Status *</label>
-                                <select
-                                    required
-                                    value={formData.status}
-                                    onChange={(e) => setFormData({...formData, status: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                                >
-                                    {statusOptions.map(option => (
-                                        <option key={option.id} value={option.id}>{option.name}</option>
-                                    ))}
+                                <select required value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg">
+                                    {statusOptions.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}
                                 </select>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                                <textarea
-                                    rows="3"
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none resize-none"
-                                    placeholder="Describe the facility or equipment..."
-                                />
+                                <textarea rows="3" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border border-slate-200 rounded-lg resize-none" />
                             </div>
 
                             <div className="flex justify-end gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 text-slate-600 hover:text-primary-dark"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-5 py-2 bg-primary-dark text-white rounded-lg hover:bg-black"
-                                >
-                                    {editingResource ? 'Update' : 'Create'}
-                                </button>
+                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 hover:text-primary-dark">Cancel</button>
+                                <button type="submit" className="px-5 py-2 bg-primary-dark text-white rounded-lg hover:bg-black">{editingResource ? 'Update' : 'Create'}</button>
                             </div>
                         </form>
                     </div>

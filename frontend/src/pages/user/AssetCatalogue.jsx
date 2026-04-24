@@ -8,45 +8,66 @@ import {
     MapPin, 
     Users, 
     Wifi, 
-    Coffee, 
     Building2,
     Monitor,
     ChevronDown,
     RefreshCw,
-    Calendar
+    Landmark,
+    HardDrive,
+    School,
+    Trees,
+    CheckCircle2,
+    XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const AssetCatalogue = () => {
+const AssetsCatalogue = () => {
     const { token } = useAuth();
     const navigate = useNavigate();
     const [resources, setResources] = useState([]);
     const [filteredResources, setFilteredResources] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedBuilding, setSelectedBuilding] = useState('all');
+    const [selectedType, setSelectedType] = useState('all');
     const [showFilters, setShowFilters] = useState(true);
-    
-    const [filters, setFilters] = useState({
-        type: '',
-        minCapacity: '',
-        location: '',
-        status: 'ACTIVE'
-    });
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+    // Axios interceptor for auth token
+    axios.interceptors.request.use(
+        (config) => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
+
+    // Resource Types
+    const resourceTypes = [
+        { id: 'LECTURE_HALL', name: 'Lecture Hall', icon: <Users className="w-4 h-4" /> },
+        { id: 'LAB', name: 'Laboratory', icon: <Wifi className="w-4 h-4" /> },
+        { id: 'MEETING_ROOM', name: 'Meeting Room', icon: <Building2 className="w-4 h-4" /> },
+        { id: 'EQUIPMENT', name: 'Equipment', icon: <Monitor className="w-4 h-4" /> },
+        { id: 'OTHER', name: 'Other', icon: <Building2 className="w-4 h-4" /> }
+    ];
+
+    // SLIIT Buildings
+    const buildings = [
+        { id: 'Main Building', name: 'Main Building', icon: <Landmark className="w-4 h-4" /> },
+        { id: 'New Building', name: 'New Building', icon: <Building2 className="w-4 h-4" /> },
+        { id: 'Engineering Building', name: 'Engineering Building', icon: <HardDrive className="w-4 h-4" /> },
+        { id: 'Business School Building', name: 'Business School Building', icon: <School className="w-4 h-4" /> },
+        { id: 'Other', name: 'Special Locations', icon: <Trees className="w-4 h-4" /> }
+    ];
 
     const fetchResources = useCallback(async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams();
-            if (filters.type) params.append('type', filters.type);
-            if (filters.minCapacity) params.append('minCapacity', filters.minCapacity);
-            if (filters.location) params.append('location', filters.location);
-            if (filters.status) params.append('status', filters.status);
-            
-            const response = await axios.get(`${API_URL}/api/resources/search?${params}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axios.get(`${API_URL}/api/resources`);
             setResources(response.data);
             setFilteredResources(response.data);
         } catch (error) {
@@ -54,53 +75,72 @@ const AssetCatalogue = () => {
         } finally {
             setLoading(false);
         }
-    }, [filters, token, API_URL]);
+    }, [API_URL]);
 
     useEffect(() => {
         fetchResources();
     }, [fetchResources]);
 
+    // Apply filters
     useEffect(() => {
-        if (searchTerm.trim() === '') {
-            setFilteredResources(resources);
-        } else {
+        let filtered = [...resources];
+        
+        // Filter by search term
+        if (searchTerm.trim() !== '') {
             const term = searchTerm.toLowerCase();
-            const filtered = resources.filter(resource => 
-                resource.name.toLowerCase().includes(term) ||
-                (resource.description && resource.description.toLowerCase().includes(term)) ||
-                resource.location.toLowerCase().includes(term)
+            filtered = filtered.filter(r => 
+                r.name?.toLowerCase().includes(term) ||
+                (r.resourceCode && r.resourceCode.toLowerCase().includes(term)) ||
+                (r.location && r.location.toLowerCase().includes(term)) ||
+                (r.description && r.description.toLowerCase().includes(term))
             );
-            setFilteredResources(filtered);
         }
-    }, [searchTerm, resources]);
+        
+        // Filter by building
+        if (selectedBuilding !== 'all') {
+            filtered = filtered.filter(r => r.building === selectedBuilding);
+        }
+        
+        // Filter by type
+        if (selectedType !== 'all') {
+            filtered = filtered.filter(r => r.type === selectedType);
+        }
+        
+        // Only show ACTIVE resources to students
+        filtered = filtered.filter(r => r.status === 'ACTIVE');
+        
+        setFilteredResources(filtered);
+    }, [searchTerm, selectedBuilding, selectedType, resources]);
 
-    const getTypeIcon = (type) => {
+    const getTypeIcon = (type, size = "w-5 h-5") => {
         switch(type) {
-            case 'LECTURE_HALL': return <Building2 className="w-5 h-5" />;
-            case 'LAB': return <Wifi className="w-5 h-5" />;
-            case 'MEETING_ROOM': return <Users className="w-5 h-5" />;
-            case 'EQUIPMENT': return <Monitor className="w-5 h-5" />;
-            default: return <Building2 className="w-5 h-5" />;
+            case 'LECTURE_HALL': return <Users className={`${size} text-blue-600`} />;
+            case 'LAB': return <Wifi className={`${size} text-green-600`} />;
+            case 'MEETING_ROOM': return <Building2 className={`${size} text-purple-600`} />;
+            case 'EQUIPMENT': return <Monitor className={`${size} text-orange-600`} />;
+            default: return <Building2 className={`${size} text-gray-600`} />;
         }
     };
 
     const getTypeLabel = (type) => {
         switch(type) {
             case 'LECTURE_HALL': return 'Lecture Hall';
-            case 'LAB': return 'Lab';
+            case 'LAB': return 'Laboratory';
             case 'MEETING_ROOM': return 'Meeting Room';
             case 'EQUIPMENT': return 'Equipment';
+            case 'OTHER': return 'Other';
             default: return type;
         }
     };
 
+    const getBuildingIcon = (building) => {
+        const buildingInfo = buildings.find(b => b.id === building);
+        return buildingInfo ? buildingInfo.icon : <Building2 className="w-3 h-3" />;
+    };
+
     const clearFilters = () => {
-        setFilters({
-            type: '',
-            minCapacity: '',
-            location: '',
-            status: 'ACTIVE'
-        });
+        setSelectedBuilding('all');
+        setSelectedType('all');
         setSearchTerm('');
     };
 
@@ -119,6 +159,14 @@ const AssetCatalogue = () => {
                 <div className="max-w-7xl mx-auto px-6 py-8">
                     <h1 className="text-3xl font-bold">Facilities & Assets Catalogue</h1>
                     <p className="text-slate-300 mt-2">Browse and book available campus resources</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-3">
+                        {buildings.map(b => (
+                            <span key={b.id} className="flex items-center gap-1 text-xs text-slate-300">
+                                {b.icon}
+                                {b.name}
+                            </span>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -129,7 +177,7 @@ const AssetCatalogue = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                         <input
                             type="text"
-                            placeholder="Search by name, description, or location..."
+                            placeholder="Search by name, code, location, or description..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-accent-gold focus:border-accent-gold outline-none"
@@ -158,48 +206,83 @@ const AssetCatalogue = () => {
                 {/* Filters Panel */}
                 {showFilters && (
                     <div className="bg-white rounded-xl p-5 border border-slate-200 mb-6">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <select
-                                value={filters.type}
-                                onChange={(e) => setFilters({...filters, type: e.target.value})}
-                                className="px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                            >
-                                <option value="">All Types</option>
-                                <option value="LECTURE_HALL">Lecture Hall</option>
-                                <option value="LAB">Lab</option>
-                                <option value="MEETING_ROOM">Meeting Room</option>
-                                <option value="EQUIPMENT">Equipment</option>
-                            </select>
-                            
-                            <input
-                                type="number"
-                                placeholder="Min Capacity"
-                                value={filters.minCapacity}
-                                onChange={(e) => setFilters({...filters, minCapacity: e.target.value})}
-                                className="px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                            />
-                            
-                            <input
-                                type="text"
-                                placeholder="Location"
-                                value={filters.location}
-                                onChange={(e) => setFilters({...filters, location: e.target.value})}
-                                className="px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent-gold outline-none"
-                            />
-                            
+                        {/* Building Filters */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Building</label>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setSelectedBuilding('all')}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                        selectedBuilding === 'all' 
+                                            ? 'bg-primary-dark text-white' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    All Buildings
+                                </button>
+                                {buildings.map(building => (
+                                    <button
+                                        key={building.id}
+                                        onClick={() => setSelectedBuilding(building.id)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
+                                            selectedBuilding === building.id 
+                                                ? 'bg-primary-dark text-white' 
+                                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        {building.icon}
+                                        {building.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Type Filters */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Type</label>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setSelectedType('all')}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                        selectedType === 'all' 
+                                            ? 'bg-primary-dark text-white' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    All Types
+                                </button>
+                                {resourceTypes.map(type => (
+                                    <button
+                                        key={type.id}
+                                        onClick={() => setSelectedType(type.id)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
+                                            selectedType === type.id 
+                                                ? 'bg-primary-dark text-white' 
+                                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        {type.icon}
+                                        {type.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        {(selectedBuilding !== 'all' || selectedType !== 'all' || searchTerm) && (
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 text-slate-500 hover:text-primary-dark transition-colors"
+                                className="text-sm text-accent-orange hover:underline mt-2"
                             >
-                                Clear Filters
+                                Clear all filters
                             </button>
-                        </div>
+                        )}
                     </div>
                 )}
 
                 {/* Results Count */}
                 <div className="mb-4 text-sm text-slate-500">
-                    Found {filteredResources.length} resource{filteredResources.length !== 1 ? 's' : ''}
+                    Found {filteredResources.length} active resource{filteredResources.length !== 1 ? 's' : ''}
                 </div>
 
                 {/* Resources Grid */}
@@ -207,45 +290,63 @@ const AssetCatalogue = () => {
                     <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
                         <Building2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                         <p className="text-slate-500">No resources found matching your criteria.</p>
+                        <button
+                            onClick={clearFilters}
+                            className="mt-4 text-accent-orange hover:underline"
+                        >
+                            Clear all filters
+                        </button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredResources.map((resource) => (
-                            <div key={resource.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow">
+                            <div key={resource.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group">
                                 {/* Image */}
-                                {resource.imageUrl ? (
-                                    <img 
-                                        src={resource.imageUrl} 
-                                        alt={resource.name} 
-                                        className="w-full h-48 object-cover"
-                                        onError={(e) => e.target.style.display = 'none'}
-                                    />
-                                ) : (
-                                    <div className="w-full h-48 bg-gradient-to-r from-primary-dark/10 to-secondary-blue/10 flex items-center justify-center">
-                                        <Building2 className="w-16 h-16 text-primary-dark/30" />
+                                <div className="relative h-48 bg-gradient-to-r from-primary-dark/10 to-secondary-blue/10">
+                                    {resource.imageUrl ? (
+                                        <img 
+                                            src={resource.imageUrl} 
+                                            alt={resource.name} 
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Building2 className="w-16 h-16 text-primary-dark/20" />
+                                        </div>
+                                    )}
+                                    {/* Building Badge */}
+                                    <div className="absolute top-3 right-3">
+                                        <span className="text-xs px-2 py-1 rounded-full bg-white/90 shadow-sm flex items-center gap-1">
+                                            {getBuildingIcon(resource.building)}
+                                            <span className="text-slate-700">{resource.building}</span>
+                                        </span>
                                     </div>
-                                )}
+                                    {/* Status Badge */}
+                                    <div className="absolute bottom-3 left-3">
+                                        <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+                                            <CheckCircle2 className="w-3 h-3" />
+                                            Available
+                                        </span>
+                                    </div>
+                                </div>
                                 
                                 <div className="p-5">
-                                    {/* Type & Status */}
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            {getTypeIcon(resource.type)}
-                                            <span className="text-xs font-semibold text-accent-orange uppercase">
-                                                {getTypeLabel(resource.type)}
-                                            </span>
-                                        </div>
-                                        <span className={`text-xs px-2 py-1 rounded-full ${
-                                            resource.status === 'ACTIVE' 
-                                                ? 'bg-green-100 text-green-700' 
-                                                : 'bg-red-100 text-red-700'
-                                        }`}>
-                                            {resource.status === 'ACTIVE' ? 'Available' : 'Unavailable'}
+                                    {/* Type */}
+                                    <div className="flex items-center gap-2 mb-3">
+                                        {getTypeIcon(resource.type)}
+                                        <span className="text-xs font-semibold text-accent-orange uppercase">
+                                            {getTypeLabel(resource.type)}
                                         </span>
                                     </div>
                                     
                                     {/* Name */}
                                     <h3 className="text-xl font-bold text-primary-dark mb-2">{resource.name}</h3>
+                                    
+                                    {/* Resource Code */}
+                                    {resource.resourceCode && (
+                                        <p className="text-xs text-slate-400 mb-2">Code: {resource.resourceCode}</p>
+                                    )}
                                     
                                     {/* Description */}
                                     <p className="text-slate-500 text-sm mb-4 line-clamp-2">
@@ -255,11 +356,11 @@ const AssetCatalogue = () => {
                                     {/* Details */}
                                     <div className="space-y-2 mb-5">
                                         <div className="flex items-center gap-2 text-slate-600 text-sm">
-                                            <MapPin className="w-4 h-4" />
-                                            <span>{resource.location}</span>
+                                            <MapPin className="w-4 h-4 text-slate-400" />
+                                            <span>{resource.location}{resource.floor ? `, ${resource.floor}` : ''}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-slate-600 text-sm">
-                                            <Users className="w-4 h-4" />
+                                            <Users className="w-4 h-4 text-slate-400" />
                                             <span>Capacity: {resource.capacity} people</span>
                                         </div>
                                     </div>
@@ -267,14 +368,9 @@ const AssetCatalogue = () => {
                                     {/* Book Button */}
                                     <button
                                         onClick={() => navigate(`/my-bookings?resource=${resource.id}`)}
-                                        disabled={resource.status !== 'ACTIVE'}
-                                        className={`w-full py-2.5 rounded-lg font-semibold transition-colors ${
-                                            resource.status === 'ACTIVE'
-                                                ? 'bg-primary-dark text-white hover:bg-black'
-                                                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                        }`}
+                                        className="w-full py-2.5 rounded-lg font-semibold transition-all bg-primary-dark text-white hover:bg-black hover:-translate-y-0.5"
                                     >
-                                        {resource.status === 'ACTIVE' ? 'Book This Resource' : 'Currently Unavailable'}
+                                        Book This Resource
                                     </button>
                                 </div>
                             </div>
@@ -286,4 +382,4 @@ const AssetCatalogue = () => {
     );
 };
 
-export default AssetCatalogue;
+export default AssetsCatalogue;

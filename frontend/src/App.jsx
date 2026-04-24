@@ -25,7 +25,10 @@ import GlobalTicketView from './pages/admin/GlobalTicketView';
 
 // Technician pages
 import TechnicianQueue from './pages/technician/TechnicianQueue';
-// ===========================================
+
+// Manager
+import ResourceInventoryReports from './pages/manager/ResourceInventoryReports';
+import ManagerDashboard from './pages/manager/ManagerDashboard';
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -119,6 +122,15 @@ function App() {
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
                             </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+                                <Route path="/manager/ResourceInventoryReports" element={<ResourceInventoryReports />} />
+                            </Route>
+
+                            <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+                                <Route path="/manager/ManagerDashboard" element={<ManagerDashboard />} />
+                            </Route>
+
                         </Routes>
                     </main>
                 </div>
