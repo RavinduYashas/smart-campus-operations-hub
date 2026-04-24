@@ -56,7 +56,6 @@ const Navbar = () => {
         // USER role — Module A, B, C
         { path: '/user/AssetCatalogue', label: 'Catalogue', icon: <Building2 size={15} />, roles: ['USER'] },
         { path: '/my-bookings', label: 'My Bookings', icon: <Calendar size={15} />, roles: ['USER'] },
-        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['USER'] },
 
         // GLOBAL INCIDENT TICKETING (Accessible to Admin, Student, Manager)
         { path: '/incident-tickets', label: 'Incident Tickets', icon: <Ticket size={15} />, roles: ['USER', 'MANAGER'] },
@@ -69,11 +68,9 @@ const Navbar = () => {
         { path: '/admin/AssetsManagement', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
-        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['ADMIN'] },
 
         // TECHNICIAN role
         { path: '/technician/tasks', label: 'My Tasks', icon: <Ticket size={15} />, roles: ['TECHNICIAN'] },
-        { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['TECHNICIAN'] },
 
         // MONITORING & REPORTS
         { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER', 'ADMIN'] },
