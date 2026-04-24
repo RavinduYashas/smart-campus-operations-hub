@@ -86,6 +86,15 @@ public class TicketService {
                     "MAINTENANCE", 
                     savedTicket.getId(), 
                     NotificationType.TICKET_STATUS);
+
+                // Notify all Admins
+                notificationService.createRoleNotification("ADMIN", 
+                    "System Incident",
+                    "A new incident has been reported: " + ticket.getTitle(), 
+                    ticket.getPriority().toUpperCase(), 
+                    "SECURITY", 
+                    savedTicket.getId(), 
+                    NotificationType.TICKET_STATUS);
             } else if (reporter.getRole() == User.Role.TECHNICIAN) {
                 // Notify all Students (USER role)
                 notificationService.createRoleNotification("USER", 

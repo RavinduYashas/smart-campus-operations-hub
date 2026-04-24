@@ -56,7 +56,16 @@ public class BookingService {
             "NORMAL", 
             "BOOKING", 
             savedBooking.getId(), 
-            com.smartcampus.backend.model.Notification.NotificationType.TICKET_STATUS); // Using TICKET_STATUS as generic for now or I can add a new type
+            com.smartcampus.backend.model.Notification.NotificationType.TICKET_STATUS);
+
+        // Notify Admins about new booking
+        notificationService.createRoleNotification("ADMIN", 
+            "New Reservation", 
+            "A new resource reservation has been requested for " + requestDTO.getPurpose(), 
+            "NORMAL", 
+            "BOOKING", 
+            savedBooking.getId(), 
+            com.smartcampus.backend.model.Notification.NotificationType.TICKET_STATUS);
 
         return mapToDTO(savedBooking);
     }

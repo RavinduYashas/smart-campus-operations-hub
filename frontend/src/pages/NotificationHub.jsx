@@ -23,18 +23,22 @@ import {
 const NotificationHub = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user } = useAuth();
 
     const fetchAlerts = async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem('token');
             const res = await axios.get('http://localhost:8080/api/notifications/my-alerts', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(res.data);
+            setError(null);
         } catch (error) {
             console.error("Error fetching notifications", error);
+            setError("Could not load notifications. Please check your connection.");
         } finally {
             setLoading(false);
         }
@@ -141,12 +145,25 @@ const NotificationHub = () => {
         </header>
 
         <div className="space-y-6">
-            {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-                    <p className="text-slate-500 font-bold tracking-wide">Fetching your pulse...</p>
+            {loading && (
+                <div className="flex flex-col items-center justify-center p-12 space-y-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
+                    <p className="text-slate-500 font-medium">Checking for updates...</p>
                 </div>
-            ) : notifications.length === 0 ? (
+            )}
+
+            {error && !loading && (
+                <div className="bg-rose-50 border border-rose-100 p-8 rounded-[2rem] text-center">
+                    <ShieldAlert size={48} className="mx-auto text-rose-500 mb-4" />
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Something went wrong</h3>
+                    <p className="text-slate-500 mb-6">{error}</p>
+                    <button onClick={fetchAlerts} className="px-6 py-2 bg-rose-500 text-white rounded-xl font-bold hover:bg-rose-600 transition-all">
+                        Try Again
+                    </button>
+                </div>
+            )}
+
+            {!loading && !error && notifications.length === 0 && (
                 <div className="bg-white rounded-[2rem] p-12 text-center border border-dashed border-slate-200">
                     <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                         <Check size={32} />
@@ -154,7 +171,9 @@ const NotificationHub = () => {
                     <h3 className="text-xl font-bold text-slate-800">All caught up!</h3>
                     <p className="text-slate-500 mt-2">You don't have any new notifications at the moment.</p>
                 </div>
-            ) : (
+            )}
+            
+            {!loading && !error && notifications.length > 0 && (
                 <div className="space-y-4">
                     {notifications.map((notif) => {
                         const { icon, style } = getIconInfo(notif.type, notif.category);

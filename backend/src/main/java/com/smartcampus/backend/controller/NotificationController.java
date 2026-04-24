@@ -19,12 +19,23 @@ public class NotificationController {
     @GetMapping("/my-alerts")
     public ResponseEntity<List<Notification>> getMyAlerts(org.springframework.security.core.Authentication authentication) {
         String email = authentication.getName();
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .orElse("USER");
         
-        return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, role));
+        // Get all roles
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .collect(java.util.stream.Collectors.toList());
+        
+        // Prioritize ADMIN if present
+        String roleToSearch = roles.contains("ADMIN") ? "ADMIN" : (roles.isEmpty() ? "USER" : roles.get(0));
+        
+        System.out.println("DEBUG: Fetching alerts for User: " + email + " | Detected Roles: " + roles + " | Searching for Role: " + roleToSearch);
+        
+        return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, roleToSearch));
+    }
+
+    @GetMapping("/debug-all")
+    public ResponseEntity<List<Notification>> getAllNotifications() {
+        return ResponseEntity.ok(notificationRepository.findAll());
     }
 
     @PostMapping("/{id}/toggle-read")
