@@ -15,6 +15,7 @@ public class Notification {
     @Id
     private String id;
     private String userId;
+    private String targetRole; // e.g., "ADMIN", "TECHNICIAN", "MANAGER"
     private String message;
     private NotificationType type;
     private boolean isRead;
