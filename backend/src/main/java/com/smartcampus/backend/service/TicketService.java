@@ -57,7 +57,13 @@ public class TicketService {
         System.out.println("Ticket created: " + savedTicket.getTicketId() + " by " + userEmail + " (Role: " + ticket.getReporterRole() + ")");
 
         // Always notify the reporter themselves
-        notificationService.createNotification(userEmail, "You have successfully reported: " + savedTicket.getTitle(), NotificationType.TICKET_STATUS);
+        notificationService.createNotification(userEmail, 
+            "Ticket Created", 
+            "You have successfully reported: " + savedTicket.getTitle(), 
+            savedTicket.getPriority().toUpperCase(), 
+            "MAINTENANCE", 
+            savedTicket.getId(), 
+            NotificationType.TICKET_STATUS);
 
         // Cross-role notifications
         if (reporterOpt.isPresent()) {
@@ -65,23 +71,48 @@ public class TicketService {
             if (reporter.getRole() == User.Role.USER) {
                 // Notify all Technicians
                 notificationService.createRoleNotification("TECHNICIAN", 
+                    "New Incident Reported",
                     "New student incident: " + ticket.getTitle() + " at " + ticket.getLocation(), 
+                    ticket.getPriority().toUpperCase(), 
+                    "MAINTENANCE", 
+                    savedTicket.getId(), 
                     NotificationType.TICKET_STATUS);
                 
                 // Notify all Managers
                 notificationService.createRoleNotification("MANAGER", 
+                    "Resource Alert",
                     "Resource incident reported: " + ticket.getTitle(), 
+                    "NORMAL", 
+                    "MAINTENANCE", 
+                    savedTicket.getId(), 
+                    NotificationType.TICKET_STATUS);
+
+                // Notify all Admins
+                notificationService.createRoleNotification("ADMIN", 
+                    "System Incident",
+                    "A new incident has been reported: " + ticket.getTitle(), 
+                    ticket.getPriority().toUpperCase(), 
+                    "SECURITY", 
+                    savedTicket.getId(), 
                     NotificationType.TICKET_STATUS);
             } else if (reporter.getRole() == User.Role.TECHNICIAN) {
                 // Notify all Students (USER role)
                 notificationService.createRoleNotification("USER", 
+                    "Maintenance Update",
                     "Campus Maintenance Update: " + ticket.getTitle(), 
+                    "NORMAL", 
+                    "MAINTENANCE", 
+                    ticket.getId(), 
                     NotificationType.TICKET_STATUS);
             }
         } else {
             // Fallback for unknown reporters
             notificationService.createRoleNotification("TECHNICIAN", 
+                "Guest Incident",
                 "Guest incident reported: " + ticket.getTitle(), 
+                "NORMAL", 
+                "MAINTENANCE", 
+                savedTicket.getId(), 
                 NotificationType.TICKET_STATUS);
         }
 
@@ -128,7 +159,13 @@ public class TicketService {
             
             // Notify student of status change
             String message = "Your ticket '" + ticket.getTitle() + "' is now " + ticket.getStatus();
-            notificationService.createNotification(ticket.getReporterEmail(), message, NotificationType.TICKET_STATUS);
+            notificationService.createNotification(ticket.getReporterEmail(), 
+                "Status Updated", 
+                message, 
+                ticket.getPriority().toUpperCase(), 
+                "MAINTENANCE", 
+                ticket.getId(), 
+                NotificationType.TICKET_STATUS);
         }
         
         if (dto.getPriority() != null) ticket.setPriority(dto.getPriority());
@@ -138,7 +175,13 @@ public class TicketService {
                 ticket.setStatus("Assigned");
                 // Notify student of assignment
                 String message = "Your ticket '" + ticket.getTitle() + "' has been assigned to a technician.";
-                notificationService.createNotification(ticket.getReporterEmail(), message, NotificationType.TICKET_STATUS);
+                notificationService.createNotification(ticket.getReporterEmail(), 
+                    "Ticket Assigned", 
+                    message, 
+                    "NORMAL", 
+                    "MAINTENANCE", 
+                    ticket.getId(), 
+                    NotificationType.TICKET_STATUS);
             }
         }
 
@@ -151,7 +194,13 @@ public class TicketService {
             
             // Notify student of a new comment from technician
             String message = "Technician update on '" + ticket.getTitle() + "': " + dto.getUpdateText();
-            notificationService.createNotification(ticket.getReporterEmail(), message, NotificationType.COMMENT);
+            notificationService.createNotification(ticket.getReporterEmail(), 
+                "New Comment", 
+                message, 
+                "NORMAL", 
+                "MAINTENANCE", 
+                ticket.getId(), 
+                NotificationType.COMMENT);
         }
 
         return ticketRepository.save(ticket);

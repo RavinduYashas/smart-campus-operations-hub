@@ -5,9 +5,7 @@ import com.smartcampus.backend.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,11 +19,24 @@ public class NotificationController {
     @GetMapping("/my-alerts")
     public ResponseEntity<List<Notification>> getMyAlerts(org.springframework.security.core.Authentication authentication) {
         String email = authentication.getName();
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .orElse("USER");
         
-        return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, role));
+        // Get all roles
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .collect(java.util.stream.Collectors.toList());
+        
+        // Prioritize ADMIN if present
+        String roleToSearch = roles.contains("ADMIN") ? "ADMIN" : (roles.isEmpty() ? "USER" : roles.get(0));
+        
+        return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, roleToSearch));
+    }
+
+    @PostMapping("/{id}/toggle-read")
+    public ResponseEntity<Void> toggleRead(@PathVariable String id) {
+        notificationRepository.findById(id).ifPresent(notif -> {
+            notif.setRead(!notif.isRead());
+            notificationRepository.save(notif);
+        });
+        return ResponseEntity.ok().build();
     }
 }

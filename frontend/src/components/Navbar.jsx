@@ -35,7 +35,7 @@ const Navbar = () => {
                 const res = await axios.get('http://localhost:8080/api/notifications/my-alerts', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const unread = res.data.filter(n => !n.isRead).length;
+                const unread = res.data.filter(n => !n.read).length;
                 setUnreadCount(unread);
             } catch (error) {
                 console.error("Error fetching notification count", error);
@@ -44,7 +44,13 @@ const Navbar = () => {
 
         fetchUnreadCount();
         const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
-        return () => clearInterval(interval);
+        
+        window.addEventListener('notifications-updated', fetchUnreadCount);
+        
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('notifications-updated', fetchUnreadCount);
+        };
     }, [user]);
 
     const isActive = (path) => location.pathname === path;
