@@ -80,6 +80,23 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
+        if (!isAllowedDomain(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "unauthorized_domain", "message", "SLIIT domain required."));
+        }
+        
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "conflict", "message", "User already exists."));
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(java.time.LocalDateTime.now());
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+
     // ── GET /api/auth/me ─────────────────────────────────────────────────────
 
     @GetMapping("/me")

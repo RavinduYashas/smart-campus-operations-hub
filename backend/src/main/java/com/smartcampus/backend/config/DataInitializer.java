@@ -2,17 +2,19 @@ package com.smartcampus.backend.config;
 
 import com.smartcampus.backend.model.User;
 import com.smartcampus.backend.repository.UserRepository;
+import com.smartcampus.backend.repository.TicketRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initDatabase(UserRepository userRepository, TicketRepository ticketRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             String[][] testUsers = {
                 {"Admin User", "admin@my.sliit.lk", "admin123", User.Role.ADMIN.name()},
@@ -27,6 +29,21 @@ public class DataInitializer {
                     System.out.println("Created initial user: " + userData[1]);
                 }
             }
+
+            // Data Migration: Set reporterRole for existing tickets that don't have it
+            ticketRepository.findAll().forEach(ticket -> {
+                if (ticket.getReporterRole() == null) {
+                    Optional<User> user = userRepository.findByEmail(ticket.getReporterEmail());
+                    if (user.isPresent()) {
+                        ticket.setReporterRole(user.get().getRole().name());
+                        ticketRepository.save(ticket);
+                        System.out.println("Migrated ticket " + ticket.getTicketId() + " to role " + ticket.getReporterRole());
+                    } else {
+                        ticket.setReporterRole("USER");
+                        ticketRepository.save(ticket);
+                    }
+                }
+            });
         };
     }
 
