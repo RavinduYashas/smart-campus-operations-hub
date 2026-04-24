@@ -54,6 +54,9 @@ const NotificationHub = () => {
             });
             // Optimistic update
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: !n.read } : n));
+            
+            // Notify navbar to update count
+            window.dispatchEvent(new CustomEvent('notifications-updated'));
         } catch (error) {
             console.error("Error toggling read status", error);
         }
