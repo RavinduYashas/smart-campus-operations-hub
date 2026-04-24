@@ -28,14 +28,7 @@ public class NotificationController {
         // Prioritize ADMIN if present
         String roleToSearch = roles.contains("ADMIN") ? "ADMIN" : (roles.isEmpty() ? "USER" : roles.get(0));
         
-        System.out.println("DEBUG: Fetching alerts for User: " + email + " | Detected Roles: " + roles + " | Searching for Role: " + roleToSearch);
-        
         return ResponseEntity.ok(notificationRepository.findByUserIdOrTargetRoleOrderByCreatedAtDesc(email, roleToSearch));
-    }
-
-    @GetMapping("/debug-all")
-    public ResponseEntity<List<Notification>> getAllNotifications() {
-        return ResponseEntity.ok(notificationRepository.findAll());
     }
 
     @PostMapping("/{id}/toggle-read")

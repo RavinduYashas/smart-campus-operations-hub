@@ -24,9 +24,7 @@ public class NotificationService {
         notification.setType(type);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
-        Notification saved = notificationRepository.save(notification);
-        System.out.println("LOG: Personal Notification created for " + userId + " | Title: " + title);
-        return saved;
+        return notificationRepository.save(notification);
     }
 
     public Notification createRoleNotification(String targetRole, String title, String message, String priority, String category, String relatedId, Notification.NotificationType type) {
@@ -40,8 +38,6 @@ public class NotificationService {
         notification.setType(type);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
-        Notification saved = notificationRepository.save(notification);
-        System.out.println("LOG: Role Notification created for " + targetRole + " | Title: " + title);
-        return saved;
+        return notificationRepository.save(notification);
     }
 }
