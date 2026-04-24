@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { 
     ShieldAlert, 
     Settings, 
@@ -12,10 +15,42 @@ import {
     Users,
     CalendarDays,
     Package,
-    Ticket
+    Ticket,
+    UserPlus
 } from 'lucide-react';
 
 const AdminPanel = () => {
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        department: 'electrical',
+        password: 'Password123!' // Default password for new staff
+    });
+    const [isCreating, setIsCreating] = useState(false);
+
+    const handleCreateAccount = async () => {
+        if (!formData.email.endsWith('@sliit.lk') && !formData.email.endsWith('@my.sliit.lk')) {
+            toast.error("Valid SLIIT email required");
+            return;
+        }
+
+        setIsCreating(true);
+        try {
+            await axios.post('/api/auth/register', {
+                name: `${formData.firstName} ${formData.lastName}`,
+                email: formData.email,
+                password: formData.password,
+                role: 'TECHNICIAN'
+            });
+            toast.success(`Account created for ${formData.firstName}!`);
+            setFormData({ firstName: '', lastName: '', email: '', department: 'electrical', password: 'Password123!' });
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to create account");
+        } finally {
+            setIsCreating(false);
+        }
+    };
     return (
         <div className="p-6 md:p-10 lg:p-16 max-w-[1600px] mx-auto min-h-screen bg-slate-50/30">
             {/* Admin Header */}
@@ -126,9 +161,63 @@ const AdminPanel = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Admin Management Section: Add Technician */}
+            <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
+                 <div className="flex items-center gap-4 mb-8">
+                      <div className="bg-secondary-blue/10 p-4 rounded-3xl">
+                           <UserPlus size={32} className="text-secondary-blue" />
+                      </div>
+                      <div>
+                           <h2 className="text-3xl font-bold text-primary-dark">Provision Staff Account</h2>
+                           <p className="text-slate-500 font-medium text-sm">Register new technicians and assign system privileges.</p>
+                      </div>
+                 </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+                      <div className="space-y-2">
+                           <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-2">First Name</label>
+                           <input 
+                                type="text" 
+                                value={formData.firstName}
+                                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                placeholder="e.g. John" 
+                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-secondary-blue focus:ring-4 focus:ring-secondary-blue/10 transition-all outline-none font-medium text-slate-700" 
+                           />
+                      </div>
+                      <div className="space-y-2">
+                           <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-2">Last Name</label>
+                           <input 
+                                type="text" 
+                                value={formData.lastName}
+                                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                placeholder="e.g. Doe" 
+                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-secondary-blue focus:ring-4 focus:ring-secondary-blue/10 transition-all outline-none font-medium text-slate-700" 
+                           />
+                      </div>
+                      <div className="space-y-2">
+                           <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-2">SLIIT Email</label>
+                           <input 
+                                type="email" 
+                                value={formData.email}
+                                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                placeholder="e.g. tech@sliit.lk" 
+                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-secondary-blue focus:ring-4 focus:ring-secondary-blue/10 transition-all outline-none font-medium text-slate-700" 
+                           />
+                      </div>
+                      <button 
+                        onClick={handleCreateAccount}
+                        disabled={isCreating}
+                        className="h-[56px] w-full bg-secondary-blue text-white rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-secondary-blue/20 hover:bg-theme-blue-dark transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                          {isCreating ? "Processing..." : "Create Account"}
+                      </button>
+                 </div>
+            </div>
         </div>
     );
 };
+
 
 const AdminCard = ({ title, desc, icon, action, accent }) => (
     <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 hover:-translate-y-2 group">

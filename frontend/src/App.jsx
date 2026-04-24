@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -22,10 +23,11 @@ import NotificationHub from './pages/NotificationHub';              // Module D
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
 import AssetManagement from './pages/admin/AssetsManagement';     // Module A Admin - Your module
 import GlobalTicketView from './pages/admin/GlobalTicketView';
-
-// Technician pages
 import TechnicianQueue from './pages/technician/TechnicianQueue';
-// ===========================================
+import IncidentTickets from './pages/IncidentTickets';
+import Attachments from './pages/Attachments';
+import TechnicianUpdates from './pages/TechnicianUpdates';
+
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
@@ -36,10 +38,12 @@ const TokenHandler = () => {
     useEffect(() => {
         if (token) {
             if (window.opener) {
+                // If we are in a popup window, send the token to the parent window and close the popup
                 window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
                 window.close();
                 return;
             } else {
+                // Normal redirect flow
                 login(token);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -65,6 +69,7 @@ const TokenHandler = () => {
         }
     }, [user, loading, navigate]);
 
+    // Show a spinner while the authentication check is happening
     if (token || loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -76,9 +81,12 @@ const TokenHandler = () => {
     return <Login />;
 };
 
+
+
 function App() {
     return (
         <AuthProvider>
+            <Toaster position="top-right" reverseOrder={false} />
             <Router>
                 <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
                     <Navbar />
@@ -86,12 +94,21 @@ function App() {
                         <Routes>
                             <Route path="/login" element={<TokenHandler />} />
                             <Route path="/" element={<Home />} />
+
+                            {/* Public: domain-rejected users land here unauthenticated */}
                             <Route path="/unauthorized" element={<Unauthorized />} />
 
-                            {/* Generic Protected Dashboard */}
+                            {/* Generic Protected Dashboard and New Shared Routes */}
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
                                 <Route path="/notifications" element={<NotificationHub />} />
+                                <Route path="/attachments" element={<Attachments />} />
+                                <Route path="/technician-updates" element={<TechnicianUpdates />} />
+                            </Route>
+
+                            {/* Incident Tickets restricted from Technicians */}
+                            <Route element={<ProtectedRoute allowedRoles={['USER', 'MANAGER']} />}>
+                                <Route path="/incident-tickets" element={<IncidentTickets />} />
                             </Route>
 
                             {/* User Specific Routes */}
@@ -101,7 +118,7 @@ function App() {
                                 <Route path="/report-fault" element={<IncidentTicketing />} />
                             </Route>
 
-                            {/* Admin Routes */}
+                            {/* Role-Specific Protected Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                                 <Route path="/admin" element={<AdminPanel />} />
                                 <Route path="/admin/bookings" element={<AdminBookingQueue />} />
@@ -109,16 +126,15 @@ function App() {
                                 <Route path="/admin/tickets" element={<GlobalTicketView />} />
                             </Route>
 
-                            {/* Technician Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['TECHNICIAN']} />}>
                                 <Route path="/tickets" element={<TicketPage />} />
                                 <Route path="/technician/tasks" element={<TechnicianQueue />} />
                             </Route>
 
-                            {/* Manager Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
                             </Route>
+
                         </Routes>
                     </main>
                 </div>

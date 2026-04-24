@@ -15,7 +15,9 @@ import {
     Bell,
     Calendar,
     AlertCircle,
-    CheckCircle2
+    CheckCircle2,
+    Paperclip,
+    Wrench
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -32,8 +34,13 @@ const Navbar = () => {
         // USER role — Module A, B, C
         { path: '/user/AssetCatalogue', label: 'Catalogue', icon: <Building2 size={15} />, roles: ['USER'] },
         { path: '/my-bookings', label: 'My Bookings', icon: <Calendar size={15} />, roles: ['USER'] },
-        { path: '/report-fault', label: 'Report Fault', icon: <AlertCircle size={15} />, roles: ['USER'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['USER'] },
+
+        // GLOBAL INCIDENT TICKETING (Accessible to Admin, Student, Manager)
+        { path: '/incident-tickets', label: 'Incident Tickets', icon: <Ticket size={15} />, roles: ['USER', 'MANAGER'] },
+
+
+
 
         // ADMIN role — in logical order
         { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
@@ -46,8 +53,8 @@ const Navbar = () => {
         { path: '/technician/tasks', label: 'My Tasks', icon: <Ticket size={15} />, roles: ['TECHNICIAN'] },
         { path: '/notifications', label: 'Alerts', icon: <Bell size={15} />, roles: ['TECHNICIAN'] },
 
-        // MANAGER role
-        { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER'] },
+        // MONITORING & REPORTS
+        { path: '/reports', label: 'Reports', icon: <BarChart size={15} />, roles: ['MANAGER', 'ADMIN'] },
     ];
 
     const filteredItems = user ? navItems.filter(item => item.roles.includes(user.role)) : [];
