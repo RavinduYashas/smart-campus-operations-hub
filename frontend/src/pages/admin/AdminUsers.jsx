@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Building, Trash2, AlertTriangle, X } from 'lucide-react';
+import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Building, Trash2, AlertTriangle, X, UserPlus, Save } from 'lucide-react';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -8,6 +8,9 @@ const AdminUsers = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('ALL');
     const [userToDelete, setUserToDelete] = useState(null);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'TECHNICIAN', department: '' });
+    const [adding, setAdding] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -41,6 +44,26 @@ const AdminUsers = () => {
             console.error("Error deleting user:", error);
             alert("Failed to delete user. Please check permissions.");
             setUserToDelete(null);
+        }
+    };
+
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        setAdding(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.post('http://localhost:8080/api/admin/users', newUser, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUsers([res.data, ...users]);
+            setShowAddModal(false);
+            setNewUser({ name: '', email: '', password: '', role: 'TECHNICIAN', department: '' });
+            alert("User created successfully!");
+        } catch (error) {
+            console.error("Error creating user:", error);
+            alert(error.response?.data?.error || "Failed to create user. Ensure email is unique.");
+        } finally {
+            setAdding(false);
         }
     };
 
@@ -84,24 +107,32 @@ const AdminUsers = () => {
     return (
         <div className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-                <div>
+                <div className="flex-1">
                     <h1 className="text-4xl font-bold text-slate-900 mb-2">User Directory</h1>
                     <p className="text-slate-500 font-medium max-w-xl">
                         Manage all registered accounts, their roles, and system access levels.
                     </p>
                 </div>
                 
-                <div className="relative w-full md:w-96 group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <div className="relative w-full sm:w-72 group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Search className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search users..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-medium transition-all shadow-sm"
+                        />
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search users by name, email, or role..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-medium transition-all shadow-sm"
-                    />
+                    <button 
+                        onClick={() => setShowAddModal(true)}
+                        className="w-full sm:w-auto px-6 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200"
+                    >
+                        <UserPlus size={18} /> Add User
+                    </button>
                 </div>
             </header>
 
@@ -244,6 +275,107 @@ const AdminUsers = () => {
                                     <Trash2 size={16} /> Yes, Delete
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add User Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                                    <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                                        <UserPlus size={20} />
+                                    </div>
+                                    Create Staff Account
+                                </h2>
+                                <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-400 hover:bg-slate-50 rounded-full transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <form onSubmit={handleCreateUser} className="space-y-5">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full Name</label>
+                                    <input 
+                                        type="text" 
+                                        required 
+                                        value={newUser.name}
+                                        onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium" 
+                                        placeholder="e.g. John Doe"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Email Address</label>
+                                    <input 
+                                        type="email" 
+                                        required 
+                                        value={newUser.email}
+                                        onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium" 
+                                        placeholder="user@my.sliit.lk"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Temporary Password</label>
+                                    <input 
+                                        type="password" 
+                                        required 
+                                        value={newUser.password}
+                                        onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium" 
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Role</label>
+                                        <select 
+                                            value={newUser.role}
+                                            onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium appearance-none"
+                                        >
+                                            <option value="TECHNICIAN">Technician</option>
+                                            <option value="MANAGER">Manager</option>
+                                            <option value="ADMIN">Admin</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Department</label>
+                                        <input 
+                                            type="text" 
+                                            value={newUser.department}
+                                            onChange={(e) => setNewUser({...newUser, department: e.target.value})}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium" 
+                                            placeholder="e.g. IT Support"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowAddModal(false)}
+                                        className="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={adding}
+                                        className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-70"
+                                    >
+                                        {adding ? 'Creating...' : <><Save size={18} /> Create Account</>}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

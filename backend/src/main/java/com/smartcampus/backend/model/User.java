@@ -19,6 +19,7 @@ public class User {
     private String password;
     private String providerId;
     private Role role;
+    private String department;
     private LocalDateTime createdAt;
 
     public enum Role {

@@ -16,6 +16,7 @@ import java.util.List;
 public class AdminController {
 
     private final UserRepository userRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasRole('ADMIN')")
@@ -27,6 +28,22 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public org.springframework.http.ResponseEntity<?> createUser(@org.springframework.web.bind.annotation.RequestBody User user) {
+        try {
+            if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+                return org.springframework.http.ResponseEntity.badRequest().body(java.util.Map.of("error", "Email already exists"));
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setCreatedAt(java.time.LocalDateTime.now());
+            return org.springframework.http.ResponseEntity.ok(userRepository.save(user));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.badRequest().body(java.util.Map.of("error", "Server Error: " + e.getMessage()));
+        }
     }
 
     @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
