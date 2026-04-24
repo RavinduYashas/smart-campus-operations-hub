@@ -28,4 +28,11 @@ public class AdminController {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public org.springframework.http.ResponseEntity<Void> deleteUser(@org.springframework.web.bind.annotation.PathVariable String id) {
+        userRepository.deleteById(id);
+        return org.springframework.http.ResponseEntity.ok().build();
+    }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Briefcase, GraduationCap, Building } from 'lucide-react';
+import { Users, Search, Shield, User, Wrench, BarChart2, Mail, Building, Trash2 } from 'lucide-react';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -22,6 +22,21 @@ const AdminUsers = () => {
             console.error("Error fetching users:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteUser = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+        
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:8080/api/admin/users/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUsers(users.filter(u => u.id !== id));
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert("Failed to delete user. Please check permissions.");
         }
     };
 
@@ -88,7 +103,7 @@ const AdminUsers = () => {
                                     <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Role</th>
                                     <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Contact</th>
                                     <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Department</th>
-                                    <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">User ID</th>
+                                    <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -125,9 +140,13 @@ const AdminUsers = () => {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-lg">
-                                                    {user.id.substring(0, 8)}...
-                                                </span>
+                                                <button 
+                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                                                    title="Delete User"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
