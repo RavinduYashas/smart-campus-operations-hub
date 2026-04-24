@@ -13,14 +13,14 @@ import Unauthorized from './pages/Unauthorized';
 
 // ============ CORRECTED IMPORTS ============
 // User pages
-import AssetsCatalogue from './pages/resource/AssetCatalogue';     // Module A - Your module
+import AssetCatalogue from './pages/user/AssetCatalogue';     // Module A - Your module
 import BookingManagement from './pages/user/BookingManagement';     // Module B
 import IncidentTicketing from './pages/user/IncidentTicketing';     // Module C
 import NotificationHub from './pages/NotificationHub';              // Module D
 
 // Admin pages
 import AdminBookingQueue from './pages/admin/AdminBookingQueue';
-import AssetManagement from './pages/resource/AssetsManagement';     // Module A Admin - Your module
+import AssetManagement from './pages/admin/AssetsManagement';     // Module A Admin - Your module
 import GlobalTicketView from './pages/admin/GlobalTicketView';
 
 // Technician pages
@@ -96,7 +96,7 @@ function App() {
 
                             {/* User Specific Routes */}
                             <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
-                                <Route path="/assets" element={<AssetsCatalogue />} />
+                                <Route path="/user/AssetCatalogue" element={<AssetCatalogue />} />
                                 <Route path="/my-bookings" element={<BookingManagement />} />
                                 <Route path="/report-fault" element={<IncidentTicketing />} />
                             </Route>

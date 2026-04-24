@@ -6,6 +6,8 @@ import java.util.List;
 
 public class ResourceRequestDTO {
     
+    private String resourceCode;
+    
     @NotBlank(message = "Resource name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
@@ -20,6 +22,9 @@ public class ResourceRequestDTO {
     @NotBlank(message = "Location is required")
     private String location;
     
+    private String building;
+    private String floor;
+    
     @NotNull(message = "Status is required")
     private Resource.ResourceStatus status;
     
@@ -28,6 +33,9 @@ public class ResourceRequestDTO {
     private String imageUrl;
     
     // Getters and Setters
+    public String getResourceCode() { return resourceCode; }
+    public void setResourceCode(String resourceCode) { this.resourceCode = resourceCode; }
+    
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     
@@ -39,6 +47,12 @@ public class ResourceRequestDTO {
     
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    
+    public String getBuilding() { return building; }
+    public void setBuilding(String building) { this.building = building; }
+    
+    public String getFloor() { return floor; }
+    public void setFloor(String floor) { this.floor = floor; }
     
     public Resource.ResourceStatus getStatus() { return status; }
     public void setStatus(Resource.ResourceStatus status) { this.status = status; }

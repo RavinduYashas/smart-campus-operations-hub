@@ -6,10 +6,13 @@ import java.util.List;
 
 public class ResourceResponseDTO {
     private String id;
+    private String resourceCode;
     private String name;
     private Resource.ResourceType type;
     private Integer capacity;
     private String location;
+    private String building;
+    private String floor;
     private Resource.ResourceStatus status;
     private List<Resource.AvailabilityWindow> availabilityWindows;
     private String description;
@@ -21,10 +24,13 @@ public class ResourceResponseDTO {
     
     public ResourceResponseDTO(Resource resource) {
         this.id = resource.getId();
+        this.resourceCode = resource.getResourceCode();
         this.name = resource.getName();
         this.type = resource.getType();
         this.capacity = resource.getCapacity();
         this.location = resource.getLocation();
+        this.building = resource.getBuilding();
+        this.floor = resource.getFloor();
         this.status = resource.getStatus();
         this.availabilityWindows = resource.getAvailabilityWindows();
         this.description = resource.getDescription();
@@ -37,6 +43,9 @@ public class ResourceResponseDTO {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
+    public String getResourceCode() { return resourceCode; }
+    public void setResourceCode(String resourceCode) { this.resourceCode = resourceCode; }
+    
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     
@@ -48,6 +57,12 @@ public class ResourceResponseDTO {
     
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    
+    public String getBuilding() { return building; }
+    public void setBuilding(String building) { this.building = building; }
+    
+    public String getFloor() { return floor; }
+    public void setFloor(String floor) { this.floor = floor; }
     
     public Resource.ResourceStatus getStatus() { return status; }
     public void setStatus(Resource.ResourceStatus status) { this.status = status; }

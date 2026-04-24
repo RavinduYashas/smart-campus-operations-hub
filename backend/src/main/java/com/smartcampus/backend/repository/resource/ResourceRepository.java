@@ -1,4 +1,3 @@
-// src/main/java/com/smartcampus/backend/repository/resource/ResourceRepository.java
 package com.smartcampus.backend.repository.resource;
 
 import com.smartcampus.backend.model.resource.Resource;
@@ -16,9 +15,13 @@ public interface ResourceRepository extends MongoRepository<Resource, String> {
     
     List<Resource> findByLocationContainingIgnoreCase(String location);
     
+    List<Resource> findByBuilding(String building);
+    
     List<Resource> findByCapacityGreaterThanEqual(Integer capacity);
     
     List<Resource> findByNameContainingIgnoreCase(String name);
+    
+    boolean existsByName(String name);
     
     List<Resource> findByStatusAndType(Resource.ResourceStatus status, Resource.ResourceType type);
     
@@ -38,6 +41,4 @@ public interface ResourceRepository extends MongoRepository<Resource, String> {
     
     @Query("{ 'status': 'ACTIVE' }")
     List<Resource> findAllActive();
-    
-    boolean existsByName(String name);
 }

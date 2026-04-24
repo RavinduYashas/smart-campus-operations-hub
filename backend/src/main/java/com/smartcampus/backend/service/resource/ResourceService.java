@@ -1,4 +1,3 @@
-// src/main/java/com/smartcampus/backend/service/resource/ResourceService.java
 package com.smartcampus.backend.service.resource;
 
 import com.smartcampus.backend.dto.resource.ResourceFilterDTO;
@@ -32,16 +31,18 @@ public class ResourceService {
     public ResourceResponseDTO createResource(ResourceRequestDTO request) {
         logger.info("Creating new resource: {}", request.getName());
         
-        // Check for duplicate name
         if (resourceRepository.existsByName(request.getName())) {
             throw new ResourceConflictException("Resource with name '" + request.getName() + "' already exists");
         }
         
         Resource resource = new Resource();
+        resource.setResourceCode(request.getResourceCode());
         resource.setName(request.getName());
         resource.setType(request.getType());
         resource.setCapacity(request.getCapacity());
         resource.setLocation(request.getLocation());
+        resource.setBuilding(request.getBuilding());
+        resource.setFloor(request.getFloor());
         resource.setStatus(request.getStatus());
         resource.setAvailabilityWindows(request.getAvailabilityWindows());
         resource.setDescription(request.getDescription());
@@ -74,12 +75,6 @@ public class ResourceService {
         return new ResourceResponseDTO(resource);
     }
     
-    // Get Resource Entity by ID (for internal use)
-    public Resource getResourceEntityById(String id) {
-        return resourceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
-    }
-    
     // Update Resource
     @CacheEvict(value = "resources", allEntries = true)
     public ResourceResponseDTO updateResource(String id, ResourceRequestDTO request) {
@@ -88,19 +83,23 @@ public class ResourceService {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
         
-        // Check for duplicate name (excluding current resource)
         if (!resource.getName().equals(request.getName()) && resourceRepository.existsByName(request.getName())) {
             throw new ResourceConflictException("Resource with name '" + request.getName() + "' already exists");
         }
         
+        resource.setResourceCode(request.getResourceCode());
         resource.setName(request.getName());
         resource.setType(request.getType());
         resource.setCapacity(request.getCapacity());
         resource.setLocation(request.getLocation());
+        resource.setBuilding(request.getBuilding());
+        resource.setFloor(request.getFloor());
         resource.setStatus(request.getStatus());
         resource.setAvailabilityWindows(request.getAvailabilityWindows());
         resource.setDescription(request.getDescription());
-        resource.setImageUrl(request.getImageUrl());
+        if (request.getImageUrl() != null) {
+            resource.setImageUrl(request.getImageUrl());
+        }
         resource.setUpdatedAt(LocalDateTime.now());
         
         Resource updatedResource = resourceRepository.save(resource);
@@ -122,7 +121,7 @@ public class ResourceService {
         logger.info("Resource deleted successfully with id: {}", id);
     }
     
-    // Search Resources with multiple filters
+    // Search Resources
     public List<ResourceResponseDTO> searchResources(
             Resource.ResourceStatus status,
             Resource.ResourceType type,
@@ -159,13 +158,12 @@ public class ResourceService {
                 .collect(Collectors.toList());
     }
     
-    // Advanced search with DTO filter
+    // Advanced search
     public List<ResourceResponseDTO> advancedSearch(ResourceFilterDTO filter) {
         logger.info("Advanced search with filter: {}", filter);
         
         List<Resource> resources = resourceRepository.findAll();
         
-        // Apply filters
         if (filter.getStatus() != null) {
             resources = resources.stream()
                     .filter(r -> r.getStatus() == filter.getStatus())
@@ -203,7 +201,7 @@ public class ResourceService {
                 .collect(Collectors.toList());
     }
     
-    // Get Active Resources Only
+    // Get Active Resources
     public List<ResourceResponseDTO> getActiveResources() {
         logger.info("Fetching active resources");
         return resourceRepository.findAllActive()
@@ -224,7 +222,6 @@ public class ResourceService {
         resource.setUpdatedAt(LocalDateTime.now());
         
         Resource updatedResource = resourceRepository.save(resource);
-        logger.info("Resource status updated successfully");
         
         return new ResourceResponseDTO(updatedResource);
     }
@@ -265,12 +262,16 @@ public class ResourceService {
                 .collect(Collectors.toList());
     }
     
-    // Count Resources by Status
-    public long countByStatus(Resource.ResourceStatus status) {
-        return resourceRepository.findByStatus(status).size();
+    // Get Resources by Building
+    public List<ResourceResponseDTO> getResourcesByBuilding(String building) {
+        logger.info("Fetching resources by building: {}", building);
+        return resourceRepository.findByBuilding(building)
+                .stream()
+                .map(ResourceResponseDTO::new)
+                .collect(Collectors.toList());
     }
     
-    // Get Resource Statistics
+    // Get Statistics
     public ResourceStatistics getStatistics() {
         logger.info("Fetching resource statistics");
         
@@ -279,7 +280,6 @@ public class ResourceService {
         stats.setActiveResources((long) resourceRepository.findByStatus(Resource.ResourceStatus.ACTIVE).size());
         stats.setOutOfServiceResources((long) resourceRepository.findByStatus(Resource.ResourceStatus.OUT_OF_SERVICE).size());
         
-        // Count by type
         for (Resource.ResourceType type : Resource.ResourceType.values()) {
             stats.setCountByType(type, (long) resourceRepository.findByType(type).size());
         }
@@ -294,7 +294,6 @@ public class ResourceService {
         private long outOfServiceResources;
         private java.util.Map<Resource.ResourceType, Long> countByType = new java.util.HashMap<>();
         
-        // Getters and Setters
         public long getTotalResources() { return totalResources; }
         public void setTotalResources(long totalResources) { this.totalResources = totalResources; }
         

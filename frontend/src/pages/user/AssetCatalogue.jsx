@@ -286,4 +286,4 @@ const AssetCatalogue = () => {
     );
 };
 
-export default AssetsCatalogue;
+export default AssetCatalogue;
