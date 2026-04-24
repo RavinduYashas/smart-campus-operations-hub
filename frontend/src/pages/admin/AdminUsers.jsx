@@ -6,6 +6,7 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('ALL');
 
     useEffect(() => {
         fetchUsers();
@@ -58,15 +59,28 @@ const AdminUsers = () => {
         }
     };
 
-    const filteredUsers = users.filter(user => 
-        (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.role && user.role.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const rolesList = [
+        { id: 'ALL', label: 'All Users' },
+        { id: 'USER', label: 'Students' },
+        { id: 'MANAGER', label: 'Managers' },
+        { id: 'TECHNICIAN', label: 'Technicians' },
+        { id: 'ADMIN', label: 'Admins' }
+    ];
+
+    const filteredUsers = users.filter(user => {
+        const matchesSearch = 
+            (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.role && user.role.toLowerCase().includes(searchTerm.toLowerCase()));
+        
+        const matchesRole = activeTab === 'ALL' || user.role === activeTab;
+
+        return matchesSearch && matchesRole;
+    });
 
     return (
         <div className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                 <div>
                     <h1 className="text-4xl font-bold text-slate-900 mb-2">User Directory</h1>
                     <p className="text-slate-500 font-medium max-w-xl">
@@ -87,6 +101,30 @@ const AdminUsers = () => {
                     />
                 </div>
             </header>
+
+            {/* Role Filter Tabs */}
+            <div className="flex overflow-x-auto pb-4 mb-4 gap-2 no-scrollbar">
+                {rolesList.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap transition-all duration-300 ${
+                            activeTab === tab.id 
+                            ? 'bg-slate-900 text-white shadow-md' 
+                            : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200 hover:text-slate-900'
+                        }`}
+                    >
+                        {tab.label}
+                        <span className={`ml-2 px-2 py-0.5 rounded-lg text-xs ${
+                            activeTab === tab.id ? 'bg-white/20' : 'bg-slate-100 text-slate-400'
+                        }`}>
+                            {tab.id === 'ALL' 
+                                ? users.length 
+                                : users.filter(u => u.role === tab.id).length}
+                        </span>
+                    </button>
+                ))}
+            </div>
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
