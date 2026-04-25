@@ -13,6 +13,8 @@ public interface ResourceRepository extends MongoRepository<Resource, String> {
     
     List<Resource> findByType(Resource.ResourceType type);
     
+    long countByType(Resource.ResourceType type);
+    
     List<Resource> findByLocationContainingIgnoreCase(String location);
     
     List<Resource> findByBuilding(String building);

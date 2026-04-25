@@ -23,6 +23,7 @@ import { useAuth } from '../context/AuthContext';
 const Dashboard = () => {
     const { user } = useAuth();
     const [notifications, setNotifications] = useState([]);
+    const [stats, setStats] = useState({ totalUsers: 0, lectureHalls: 0, openTickets: 0, activeResources: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -30,7 +31,7 @@ const Dashboard = () => {
             if (!user) return;
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:8080/api/notifications/my-alerts', {
+                const res = await axios.get('/api/notifications/my-alerts', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (Array.isArray(res.data)) {
@@ -41,12 +42,30 @@ const Dashboard = () => {
             } catch (error) {
                 console.error("Error fetching notifications:", error);
                 setNotifications([]);
-            } finally {
-                setLoading(false);
             }
         };
 
-        fetchNotifications();
+        const fetchStats = async () => {
+            if (!user || user.role === 'USER') return;
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get('/api/admin/stats', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setStats(res.data);
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        };
+
+        const loadData = async () => {
+            setLoading(true);
+            await fetchNotifications();
+            await fetchStats();
+            setLoading(false);
+        };
+
+        loadData();
     }, [user]);
 
     // Role-based Quick Actions
@@ -81,9 +100,9 @@ const Dashboard = () => {
     const quickActions = getQuickActions();
 
     return (
-        <div className="p-6 md:p-10 lg:p-16 max-w-[1600px] mx-auto min-h-screen bg-slate-50/30">
+        <div className="p-6 md:p-8 lg:p-10 max-w-[1600px] mx-auto min-h-screen bg-slate-50/30">
             {/* Contextual Header */}
-            <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 animate-in fade-in slide-in-from-left duration-700">
+            <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 animate-in fade-in slide-in-from-left duration-700">
                 <div className="space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="h-8 w-1.5 bg-accent-gold rounded-full"></div>
@@ -111,16 +130,16 @@ const Dashboard = () => {
 
             {/* Quick Actions Grid */}
             {quickActions.length > 0 && (
-                <div className="mb-12">
-                    <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Quick Actions</h2>
+                <div className="mb-8">
+                    <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
                         {quickActions.map((action, idx) => (
                             <Link 
                                 key={idx} 
                                 to={action.path}
-                                className="group bg-white p-6 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+                                className="group bg-white p-4 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-4"
                             >
-                                <div className={`p-4 rounded-2xl text-white ${action.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                <div className={`p-3 rounded-xl text-white ${action.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                     {React.cloneElement(action.icon, { size: 24 })}
                                 </div>
                                 <div>
@@ -146,10 +165,10 @@ const Dashboard = () => {
                     </>
                 ) : (
                     <>
-                        <StatCard icon={<Users className="w-6 h-6 text-secondary-blue" />} title="Active Sessions" value="1,284" trend="+12% YoY" positive={true} />
-                        <StatCard icon={<Ticket className="w-6 h-6 text-rose-600" />} title="Pending Ops" value="42" trend="5 Critical" positive={false} />
-                        <StatCard icon={<Activity className="w-6 h-6 text-accent-orange" />} title="Core Load" value="24%" trend="Stable" positive={true} />
-                        <StatCard icon={<Zap className="w-6 h-6 text-accent-gold" />} title="Power Flow" value="452 kW" trend="Normal" positive={true} />
+                        <StatCard icon={<Users className="w-6 h-6 text-secondary-blue" />} title="Total Users" value={stats.totalUsers.toLocaleString()} trend="Active Base" positive={true} />
+                        <StatCard icon={<Ticket className="w-6 h-6 text-rose-600" />} title="Open Tickets" value={stats.openTickets} trend="Pending Action" positive={false} />
+                        <StatCard icon={<Building2 className="w-6 h-6 text-accent-orange" />} title="Lecture Halls" value={stats.lectureHalls} trend="Configured" positive={true} />
+                        <StatCard icon={<Zap className="w-6 h-6 text-accent-gold" />} title="Total Assets" value={stats.activeResources} trend="Tracked" positive={true} />
                     </>
                 )}
             </div>

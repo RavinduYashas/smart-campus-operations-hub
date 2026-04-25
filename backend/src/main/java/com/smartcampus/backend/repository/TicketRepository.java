@@ -11,6 +11,7 @@ public interface TicketRepository extends MongoRepository<Ticket, String> {
     List<Ticket> findByReporterEmailOrderByCreatedAtDesc(String reporterEmail);
     List<Ticket> findByAssignedToEmailOrderByCreatedAtDesc(String assignedToEmail);
     List<Ticket> findByStatusOrderByCreatedAtDesc(String status);
+    long countByStatus(String status);
     List<Ticket> findByStatusAndReporterRoleNotOrderByCreatedAtDesc(String status, String reporterRole);
     List<Ticket> findAllByOrderByCreatedAtDesc();
 }

@@ -42,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login**", "/oauth2/**", "/api/auth/login", "/api/auth/google/callback").permitAll()
                         // Admin-specific
                         .requestMatchers("/api/auth/register").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Admin/Management endpoints
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MANAGER", "TECHNICIAN")
                         // Technician-specific
                         .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
                         // Manager-specific
