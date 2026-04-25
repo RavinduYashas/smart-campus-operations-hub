@@ -71,7 +71,7 @@ const Navbar = () => {
 
         // ADMIN role — in logical order
         { path: '/admin', label: 'Control', icon: <ShieldAlert size={15} />, roles: ['ADMIN'] },
-        { path: '/admin/AssetsManagement', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
+        { path: '/admin/assets', label: 'Facilities', icon: <Building2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/bookings', label: 'Approvals', icon: <CheckCircle2 size={15} />, roles: ['ADMIN'] },
         { path: '/admin/tickets', label: 'Tickets', icon: <Ticket size={15} />, roles: ['ADMIN'] },
 

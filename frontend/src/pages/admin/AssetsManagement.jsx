@@ -313,7 +313,7 @@ const AssetsManagement = () => {
                 <div className="max-w-7xl mx-auto px-6 py-8">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h1 className="text-3xl font-bold">SLIIT Facilities & Assets Catalogue</h1>
+                            <h1 className="text-3xl font-bold text-white">SLIIT Facilities & Assets Catalogue</h1>
                             <p className="text-slate-300 mt-2">Manage academic halls, laboratories, and equipment inventory</p>
                             <div className="flex flex-wrap items-center gap-3 mt-3">
                                 {buildings.map(b => (
