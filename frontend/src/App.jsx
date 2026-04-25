@@ -132,6 +132,8 @@ function App() {
 
                             <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
                                 <Route path="/reports" element={<ReportsPage />} />
+                                <Route path="/manager/ResourceInventoryReports" element={<ResourceInventoryReports />} />
+                                <Route path="/manager/dashboard" element={<ManagerDashboard />} />
                             </Route>
                         </Routes>
                     </main>
