@@ -57,7 +57,14 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            System.err.println("JWT token is expired: " + e.getMessage());
+            return false;
+        } catch (io.jsonwebtoken.security.SignatureException e) {
+            System.err.println("JWT signature does not match: " + e.getMessage());
+            return false;
         } catch (Exception e) {
+            System.err.println("JWT validation failed: " + e.getMessage());
             return false;
         }
     }

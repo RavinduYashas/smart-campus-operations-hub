@@ -31,11 +31,14 @@ import TechnicianQueue from './pages/technician/TechnicianQueue';
 import ResourceInventoryReports from './pages/manager/ResourceInventoryReports';
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 
-// ============ ADD THESE PLACEHOLDER COMPONENTS ============
+// ============ PLACEHOLDER COMPONENTS ============
 const Attachments = () => <div className="p-8">Attachments Page - Coming Soon</div>;
 const TechnicianUpdates = () => <div className="p-8">Technician Updates - Coming Soon</div>;
-const IncidentTickets = () => <div className="p-8">Incident Tickets - Coming Soon</div>;
-// ========================================================
+// ================================================
+
+// Real page imports
+import IncidentTickets from './pages/IncidentTickets';
+
 
 const TokenHandler = () => {
     const [searchParams] = useSearchParams();
