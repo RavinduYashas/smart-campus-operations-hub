@@ -131,10 +131,5 @@ The Hub exposes a fully documented REST API. Once the backend is running, you ca
 
 ---
 
-## 🤝 Contributors
-
-*   **Smart Campus Development Team**
-
----
 
 © 2026 Smart Campus Operations Hub. All rights reserved.
